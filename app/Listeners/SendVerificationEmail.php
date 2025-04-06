@@ -21,6 +21,7 @@ class SendVerificationEmail implements ShouldQueue
     {
         $user = $event->data;
         $verifkey = $event->key;
+        Log::debug(' Handle the event ');
 
         // Retrieve the verification code from the cache
         $code = Cache::get($verifkey);

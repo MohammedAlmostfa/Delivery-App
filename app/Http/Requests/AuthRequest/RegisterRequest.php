@@ -38,7 +38,8 @@ class RegisterRequest extends FormRequest
     {
         return [
 
-
+            'name' => 'required|string|max:55',
+            'phone' => 'required|string|max:9',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => [
                 'required',
@@ -50,6 +51,7 @@ class RegisterRequest extends FormRequest
                 'regex:/[0-9]/',
                 'regex:/[@$!%*#?&]/',
             ],
+
         ];
     }
 

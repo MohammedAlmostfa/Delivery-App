@@ -2,8 +2,9 @@
 
 namespace App\Events;
 
-use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Events\Dispatchable;
 
 class Registered
 {
@@ -21,6 +22,8 @@ class Registered
      */
     public function __construct($data, $key)
     {
+        Log::debug('Event fired', ['data' => $data]);
+
         $this->data = $data;
         $this->key = $key;
     }

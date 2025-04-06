@@ -59,12 +59,12 @@ class AuthService
             }
 
             // Generate a random 6-digit code and store it in the cache
-            $code = Cache::remember($verifkey, 3600, function () {
+            $code = Cache::remember($verifkey, 1800, function () {
                 return random_int(100000, 999999);
             });
 
             // Trigger the Registered event to send the verification email
-            event(new Registered($data, $verifkey));
+            Registered::dispatch($data, $verifkey);
 
             // Return success response
             return [
@@ -122,7 +122,9 @@ class AuthService
 
                 // Create the user in the database
                 $user = User::create([
+                    'name'=>$userData['name'],
                     'email' => $userData['email'],
+                    'phone'=>$userData['phone'],
                     'password' => bcrypt($userData['password']), // Hash the password
                     'email_verified_at' => now(), // Mark the email as verified
                 ]);
@@ -192,7 +194,7 @@ class AuthService
 
 
                 // Generate a new 6-digit random code and store it in the cache for 1 hour
-                $code = Cache::remember($verifkey, 3600, function () {
+                $code = Cache::remember($verifkey, 1800, function () {
                     return random_int(100000, 999999);
                 });
 
