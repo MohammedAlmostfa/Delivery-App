@@ -15,8 +15,9 @@ return new class extends Migration {
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('phone', 9); // 20 characters is usually sufficient
+            $table->string('phone', 10);
             $table->string('password');
+            $table->point('location');
             $table->rememberToken();
             $table->timestamps();
         });
