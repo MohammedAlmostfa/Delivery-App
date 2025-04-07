@@ -2,64 +2,126 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RestaurantRequest\StoreRestaurantData;
+use App\Http\Requests\RestaurantRequest\UpdateRestaurantData; // Fixed the casing inconsistency
+use App\Http\Resources\RestaurantResource;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
+use App\Services\RestaurantService;
 
 class RestaurantController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @var RestaurantService
+     */
+    protected $restaurantservice;
+
+    /**
+     * Constructor to inject the RestaurantService dependency.
+     *
+     * @param RestaurantService $restaurantservice
+     */
+    public function __construct(RestaurantService $restaurantservice)
+    {
+        $this->restaurantservice = $restaurantservice;
+    }
+
+    /**
+     * Display a listing of restaurants.
+     *
+     * Fetches all restaurants and provides a paginated response.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        //
+        $result = $this->restaurantservice->getAllRestaurants();
+
+        // Check the status of the service response
+        return $result['status'] === 201
+               ? self::paginated($result['data'], RestaurantResource::class, $result['message'], $result['status'])
+               : self::error(null, $result['message'], $result['status']);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created restaurant.
+     *
+     * @param StoreRestaurantData $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function create()
+    public function store(StoreRestaurantData $request)
     {
-        //
+        $validatedData = $request->validated(); // Automatically validates incoming data
+        $result = $this->restaurantservice->createRestaurant($validatedData);
+
+        // Check the status of the service response
+        return $result['status'] === 200
+               ? self::success($result['data'], $result['message'], $result['status'])
+               : self::error(null, $result['message'], $result['status']);
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
+     * Display the specified restaurant's details.
+     *
+     * @param Restaurant $restaurant
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Restaurant $restaurant)
     {
-        //
+        return response()->json([
+            'status' => 200,
+            'message' => 'Restaurant fetched successfully.',
+            'data' => new RestaurantResource($restaurant),
+        ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update the specified restaurant's details.
+     *
+     * @param UpdateRestaurantData $request
+     * @param Restaurant $restaurant
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function edit(Restaurant $restaurant)
+    public function update(UpdateRestaurantData $request, Restaurant $restaurant)
     {
-        //
+        $validatedData = $request->validated(); // Automatically validates incoming data
+        $result = $this->restaurantservice->updateRestaurant($restaurant, $validatedData);
+
+        // Check the status of the service response
+        return $result['status'] === 201
+               ? self::success($result['data'], $result['message'], $result['status'])
+               : self::error(null, $result['message'], $result['status']);
     }
 
     /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Restaurant $restaurant)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * Remove the specified restaurant (soft delete).
+     *
+     * @param Restaurant $restaurant
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Restaurant $restaurant)
     {
-        //
+        $result = $this->restaurantservice->forceDeleteRestaurant($restaurant);
+
+        // Check the status of the service response
+        return $result['status'] === 200
+               ? self::success($result['data'], $result['message'], $result['status'])
+               : self::error(null, $result['message'], $result['status']);
+    }
+
+    /**
+     * Permanently delete the specified restaurant from storage.
+     *
+     * @param Restaurant $restaurant
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function permanentDelete(Restaurant $restaurant)
+    {
+        $result = $this->restaurantservice->permanentDeleteRestaurant($restaurant);
+
+        // Check the status of the service response
+        return $result['status'] === 200
+               ? self::success($result['data'], $result['message'], $result['status'])
+               : self::error(null, $result['message'], $result['status']);
     }
 }

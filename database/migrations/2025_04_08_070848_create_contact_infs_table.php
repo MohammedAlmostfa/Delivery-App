@@ -10,15 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('restaurants', function (Blueprint $table) {
+        Schema::create('contact_infs', function (Blueprint $table) {
             $table->id();
+            $table->string("whatsappNumber");
+            $table->string("phoneNumber1");
+            $table->string("phoneNumber2");
+            $table->string("email");
+            $table->foreignId('restaurant_id')->constrained('restaurants')->onDelete('cascade');
             $table->timestamps();
-            $table->string('restaurant_name');
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('restaurantType_id')->constrained('restaurant_types')->cascadeOnDelete();
-            $table->point('location');
         });
-
     }
 
     /**
@@ -26,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('restaurants');
+        Schema::dropIfExists('contact_infs');
     }
 };

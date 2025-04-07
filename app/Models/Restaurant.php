@@ -1,13 +1,18 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Restaurant extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'restaurant_name',
-        'location',
+        'latitude',
+        'longitude',
         'restaurantType_id',
         'user_id',
     ];
@@ -25,5 +30,13 @@ class Restaurant extends Model
     public function meals()
     {
         return $this->hasMany(Meal::class);  // Fixed method name
+    }
+    public function offers()
+    {
+        return $this->hasMany(Offer::class);
+    }
+    public function contantInf()
+    {
+        return $this->hasOne(ContactInf::class);
     }
 }
