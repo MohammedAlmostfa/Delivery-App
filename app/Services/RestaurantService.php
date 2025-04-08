@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\ContactInf;
 use App\Models\Restaurant;
-use Illuminate\Support\Facades\Auth; // Corrected import
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -24,7 +25,7 @@ class RestaurantService
 
             return [
                 'status' => 200,
-                'message' => 'All restaurants fetched successfully.',
+                'message' => __('restaurant.all_restaurants_fetched'),
                 'data' => $restaurants,
             ];
         } catch (\Exception $e) {
@@ -33,7 +34,9 @@ class RestaurantService
 
             return [
                 'status' => 500,
-                'message' => 'An error occurred while fetching the restaurants.',
+                'message' => [
+                    'errorDetails' => [__('general.general_erorr')],
+                ],
             ];
         }
     }
@@ -51,7 +54,7 @@ class RestaurantService
 
             return [
                 'status' => 200,
-                'message' => 'Nearby restaurants and offers fetched successfully.',
+                'message' => __('restaurant.nearby_restaurants_fetched'),
                 'data' => $restaurants,
             ];
         } catch (\Exception $e) {
@@ -60,7 +63,9 @@ class RestaurantService
 
             return [
                 'status' => 500,
-                'message' => 'An error occurred while fetching the restaurants and offers.',
+                'message' => [
+                    'errorDetails' => [__('general.general_erorr')],
+                ],
             ];
         }
     }
@@ -83,9 +88,18 @@ class RestaurantService
                 'user_id' => Auth::user()->id, // Get the authenticated user's ID
             ]);
 
+            // Create the related ContactInf record
+            $contactinf = ContactInf::create([
+                'restaurant_id' => $restaurant->id,
+                'whatsappNumber' => $data['whatsappNumber'],
+                'phoneNumber1' => $data['phoneNumber1'],
+                'phoneNumber2' => $data['phoneNumber2'],
+                'email' => $data['email'],
+            ]);
+
             return [
                 'status' => 200,
-                'message' => 'Restaurant created successfully.',
+                'message' => __('restaurant.restaurant_created'),
                 'data' => $restaurant,
             ];
         } catch (\Exception $e) {
@@ -93,10 +107,13 @@ class RestaurantService
             Log::error("Error in creating restaurant: " . $e->getMessage());
             return [
                 'status' => 500,
-                'message' => 'An error occurred while creating the restaurant.',
+                'message' => [
+                    'errorDetails' => [__('general.general_erorr')],
+                ],
             ];
         }
     }
+
 
     /**
      * Update an existing restaurant record.
@@ -114,12 +131,20 @@ class RestaurantService
                 'latitude' => $data['latitude'] ?? $restaurant->latitude,
                 'longitude' => $data['longitude'] ?? $restaurant->longitude,
                 'restaurantType_id' => $data['restaurantType_id'] ?? $restaurant->restaurantType_id,
-                'user_id' => Auth::user()->id, // Update with the current authenticated user's ID
+                'user_id' => Auth::user()->id,
+            ]);
+
+            // Update the related ContactInf record
+            $restaurant->contactInf()->update([ // Ensure this relationship method is defined in Restaurant model
+                'whatsappNumber' => $data['whatsappNumber'] ?? $restaurant->contactInf->whatsappNumber,
+                'phoneNumber1' => $data['phoneNumber1'] ?? $restaurant->contactInf->phoneNumber1,
+                'phoneNumber2' => $data['phoneNumber2'] ?? $restaurant->contactInf->phoneNumber2,
+                'email' => $data['email'] ?? $restaurant->contactInf->email,
             ]);
 
             return [
                 'status' => 200,
-                'message' => 'Restaurant updated successfully.',
+                'message' => __('restaurant.restaurant_updated'),
                 'data' => $restaurant,
             ];
         } catch (\Exception $e) {
@@ -127,10 +152,13 @@ class RestaurantService
             Log::error("Error in updating restaurant: " . $e->getMessage());
             return [
                 'status' => 500,
-                'message' => 'An error occurred while updating the restaurant.',
+                'message' => [
+                    'errorDetails' => [__('general.general_erorr')],
+                ],
             ];
         }
     }
+
 
     /**
      * Soft delete a restaurant.
@@ -146,40 +174,45 @@ class RestaurantService
 
             return [
                 'status' => 200,
-                'message' => 'Restaurant deleted successfully.',
+                'message' => __('restaurant.restaurant_deleted'),
             ];
         } catch (\Exception $e) {
             // Log the error for debugging
             Log::error("Error in deleting restaurant: " . $e->getMessage());
             return [
                 'status' => 500,
-                'message' => 'An error occurred while deleting the restaurant.',
+                'message' => [
+                    'errorDetails' => [__('general.general_erorr')],
+                ],
             ];
         }
     }
 
     /**
-     * Permanently delete a restaurant from storage.
-     *
-     * @param Restaurant $restaurant The restaurant instance to delete permanently.
-     * @return array An associative array containing the status and message.
-     */
-    public function permanentDeleteRestaurant(Restaurant $restaurant)
+ * Permanently delete a restaurant from storage.
+ *
+ * @param Restaurant $restaurant The restaurant instance to delete permanently.
+ * @return array An associative array containing the status and message.
+ */
+    public function permanentDeleteRestaurant($id)
     {
         try {
-            // Perform permanent deletion
-            $restaurant->forceDelete();
+            // Retrieve the restaurant (including soft-deleted ones)
+            $restaurant = Restaurant::withTrashed()->findOrFail($id);
 
+            $restaurant->forceDelete();
             return [
                 'status' => 200,
-                'message' => 'Restaurant permanently deleted successfully.',
+                'message' => __('restaurant.restaurant_permanent_deleted'), // Permanent delete message
             ];
         } catch (\Exception $e) {
             // Log the error for debugging
             Log::error("Error in permanently deleting restaurant: " . $e->getMessage());
             return [
                 'status' => 500,
-                'message' => 'An error occurred while permanently deleting the restaurant.',
+                'message' => [
+                    'errorDetails' => [__('general.general_erorr')],
+                ],
             ];
         }
     }

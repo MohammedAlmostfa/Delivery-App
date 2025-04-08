@@ -17,9 +17,8 @@ return new class extends Migration {
             $table->timestamp('email_verified_at')->nullable();
             $table->string('phone', 10);
             $table->string('password');
-            $table->decimal('latitude', 10, 7);
-            $table->decimal('longitude', 10, 7);
-
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

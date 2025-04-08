@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\RestaurantRequest\StoreRestaurantData;
-use App\Http\Requests\RestaurantRequest\UpdateRestaurantData; // Fixed the casing inconsistency
-use App\Http\Resources\RestaurantResource;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use App\Services\RestaurantService;
+use Illuminate\Support\Facades\Gate;
+use App\Http\Resources\RestaurantResource;
+use App\Http\Requests\RestaurantRequest\StoreRestaurantData;
+use App\Http\Requests\RestaurantRequest\UpdateRestaurantData; // Fixed the casing inconsistency
 
 class RestaurantController extends Controller
 {
@@ -51,6 +52,8 @@ class RestaurantController extends Controller
      */
     public function store(StoreRestaurantData $request)
     {
+        Gate::authorize('create', Restaurant::class);
+
         $validatedData = $request->validated(); // Automatically validates incoming data
         $result = $this->restaurantservice->createRestaurant($validatedData);
 
@@ -84,11 +87,13 @@ class RestaurantController extends Controller
      */
     public function update(UpdateRestaurantData $request, Restaurant $restaurant)
     {
+        Gate::authorize('update', $restaurant);
+
         $validatedData = $request->validated(); // Automatically validates incoming data
         $result = $this->restaurantservice->updateRestaurant($restaurant, $validatedData);
 
         // Check the status of the service response
-        return $result['status'] === 201
+        return $result['status'] === 200
                ? self::success($result['data'], $result['message'], $result['status'])
                : self::error(null, $result['message'], $result['status']);
     }
@@ -101,11 +106,13 @@ class RestaurantController extends Controller
      */
     public function destroy(Restaurant $restaurant)
     {
+        Gate::authorize('forceDelete', $restaurant);
+
         $result = $this->restaurantservice->forceDeleteRestaurant($restaurant);
 
         // Check the status of the service response
         return $result['status'] === 200
-               ? self::success($result['data'], $result['message'], $result['status'])
+               ? self::success(null, $result['message'], $result['status'])
                : self::error(null, $result['message'], $result['status']);
     }
 
@@ -115,13 +122,16 @@ class RestaurantController extends Controller
      * @param Restaurant $restaurant
      * @return \Illuminate\Http\JsonResponse
      */
-    public function permanentDelete(Restaurant $restaurant)
+    public function permanentDelete($id)
     {
-        $result = $this->restaurantservice->permanentDeleteRestaurant($restaurant);
+        $restaurant=Restaurant::withTrashed()->findOrFail($id);
+        Gate::authorize('permanentDelete', $restaurant);
+
+        $result = $this->restaurantservice->permanentDeleteRestaurant($id);
 
         // Check the status of the service response
         return $result['status'] === 200
-               ? self::success($result['data'], $result['message'], $result['status'])
+               ? self::success(null, $result['message'], $result['status'])
                : self::error(null, $result['message'], $result['status']);
     }
 }

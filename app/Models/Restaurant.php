@@ -35,7 +35,7 @@ class Restaurant extends Model
     {
         return $this->hasMany(Offer::class);
     }
-    public function contantInf()
+    public function contactInf()
     {
         return $this->hasOne(ContactInf::class);
     }

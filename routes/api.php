@@ -27,9 +27,8 @@ Route::middleware('jwt')->group(function () {
     Route::get('/user', [AuthController::class, 'getUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::put('/user', [AuthController::class, 'updateUser']);
-
-
     Route::apiResource("/restaurant", RestaurantController::class);
+    Route::put("/restaurant/permanent/{id}", [ RestaurantController::class,'permanentDelete']);
 
 
 });

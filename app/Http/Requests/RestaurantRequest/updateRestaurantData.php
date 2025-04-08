@@ -24,7 +24,7 @@ class updateRestaurantData extends FormRequest
     public function rules(): array
     {
         return [
-            'restaurant_name' => 'nullable|string"',
+            'restaurant_name' => 'nullable|string',
             'latitude' => 'nullable',
             'longitude' => 'nullable',
             'whatsappNumber' => 'nullable|string|max:15|unique:contact_infs,whatsappNumber',

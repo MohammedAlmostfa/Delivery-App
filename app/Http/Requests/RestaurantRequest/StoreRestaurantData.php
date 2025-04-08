@@ -25,12 +25,13 @@ class StoreRestaurantData extends FormRequest
     public function rules(): array
     {
         return [
-            'restaurant_name' => 'required|string"',
+            'restaurant_name' => 'required|string',
             'latitude' => 'required',
             'longitude' => 'required',
+            "restaurantType_id"=>'required|exists:restaurant_types,id',
             'whatsappNumber' => 'required|string|max:15|unique:contact_infs,whatsappNumber',
             'phoneNumber1' => 'required|string|max:15|unique:contact_infs,phoneNumber1',
-            'phoneNumber2' => 'nullable|string|max:15|unique:contact_infs,phoneNumber2',
+            'phoneNumber2' => 'nullable|string|max:15|unique:contact_infs,phoneNumber2|different:phoneNumber1',
             'email' => 'required|email|max:255|unique:contact_infs,email',
         ];
     }

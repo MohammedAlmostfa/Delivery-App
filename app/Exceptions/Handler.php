@@ -43,7 +43,7 @@ class Handler extends ExceptionHandler
         if ($exception instanceof ModelNotFoundException) {
             return response()->json([
                 'errors' => [
-                    'errorDetails' => __("trip.Resource_not_found"),
+                    'errorDetails' => __("general.Resource_not_found"),
                 ]
             ], 404);
         }
