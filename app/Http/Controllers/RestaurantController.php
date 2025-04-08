@@ -127,7 +127,7 @@ class RestaurantController extends Controller
         $restaurant=Restaurant::withTrashed()->findOrFail($id);
         Gate::authorize('permanentDelete', $restaurant);
 
-        $result = $this->restaurantservice->permanentDeleteRestaurant($id);
+        $result = $this->restaurantservice->permanentDeleteRestaurant($restaurant);
 
         // Check the status of the service response
         return $result['status'] === 200

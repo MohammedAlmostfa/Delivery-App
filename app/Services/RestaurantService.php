@@ -194,11 +194,10 @@ class RestaurantService
  * @param Restaurant $restaurant The restaurant instance to delete permanently.
  * @return array An associative array containing the status and message.
  */
-    public function permanentDeleteRestaurant($id)
+    public function permanentDeleteRestaurant($restaurant)
     {
         try {
-            // Retrieve the restaurant (including soft-deleted ones)
-            $restaurant = Restaurant::withTrashed()->findOrFail($id);
+
 
             $restaurant->forceDelete();
             return [
