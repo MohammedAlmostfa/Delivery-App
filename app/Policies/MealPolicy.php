@@ -4,63 +4,96 @@ namespace App\Policies;
 
 use App\Models\Meal;
 use App\Models\User;
+use App\Models\Restaurant;
 use Illuminate\Auth\Access\Response;
 
 class MealPolicy
 {
     /**
-     * Determine whether the user can view any models.
+     * Helper method to check if the user owns the meal.
      */
-    public function viewAny(User $user): bool
+    protected function ownsMeal(User $user, Meal $meal): bool
     {
-        return false;
+        return $user->id == $meal->restaurant->user_id;
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Meal $meal): bool
+
+
+    public function create(User $user, Restaurant $restaurant)
     {
-        return false;
+
+        if (!$user->hasPermissionTo('meal.create')) {
+            return Response::deny(__('general.have_permission'), 403);
+        }
+        return $user->id === $restaurant->user_id
+            ? Response::allow()
+            : Response::deny(__('general.not_for_you'), 403);
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
-        return false;
-    }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Meal $meal): bool
+    public function update(User $user, Meal $meal)
     {
-        return false;
+        if (!$user->hasPermissionTo('meal.update')) {
+            return Response::deny(__('general.have_permission'), 403);
+        }
+
+        return $this->ownsMeal($user, $meal)
+            ? Response::allow()
+            : Response::deny(__('general.not_for_you'), 403);
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Meal $meal): bool
+    public function delete(User $user, Meal $meal)
     {
-        return false;
+        if (!$user->hasPermissionTo('meal.update')) {
+            return Response::deny(__('general.have_permission'), 403);
+        }
+
+        return $this->ownsMeal($user, $meal)
+            ? Response::allow()
+            : Response::deny(__('general.not_for_you'), 403);
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Meal $meal): bool
+    public function restore(User $user, Meal $meal)
     {
-        return false;
+        if (!$user->hasPermissionTo('meal.update')) {
+            return Response::deny(__('general.have_permission'), 403);
+        }
+
+        return $this->ownsMeal($user, $meal)
+            ? Response::allow()
+            : Response::deny(__('general.not_for_you'), 403);
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Meal $meal): bool
+    public function forceDelete(User $user, Meal $meal)
     {
-        return false;
+        if (!$user->hasPermissionTo('meal.update')) {
+            return Response::deny(__('general.have_permission'), 403);
+        }
+
+        return $this->ownsMeal($user, $meal)
+            ? Response::allow()
+            : Response::deny(__('general.not_for_you'), 403);
+    }
+    public function permanentDelete(User $user, Meal $meal)
+    {
+        if (!$user->hasPermissionTo('meal.update')) {
+            return Response::deny(__('general.have_permission'), 403);
+        }
+
+        return $this->ownsMeal($user, $meal)
+            ? Response::allow()
+            : Response::deny(__('general.not_for_you'), 403);
     }
 }

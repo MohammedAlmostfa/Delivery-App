@@ -9,6 +9,14 @@ use Illuminate\Auth\Access\Response;
 class RestaurantPolicy
 {
     /**
+     * Helper method to check if the user owns the restaurant or is an admin.
+     */
+    protected function ownsOrAdmin(User $user, Restaurant $restaurant): bool
+    {
+        return $user->id === $restaurant->user_id || $user->hasRole('admin');
+    }
+
+    /**
      * Determine whether the user can create a restaurant.
      */
     public function create(User $user)
@@ -27,7 +35,7 @@ class RestaurantPolicy
             return Response::deny(__('general.have_permission'), 403);
         }
 
-        return $user->id === $restaurant->user_id ||$user->hasRole('admin')
+        return $this->ownsOrAdmin($user, $restaurant)
             ? Response::allow()
             : Response::deny(__('general.not_for_you'), 403);
     }
@@ -41,7 +49,7 @@ class RestaurantPolicy
             return Response::deny(__('general.have_permission'), 403);
         }
 
-        return $user->id === $restaurant->user_id ||$user->hasRole('admin')
+        return $this->ownsOrAdmin($user, $restaurant)
             ? Response::allow()
             : Response::deny(__('general.not_for_you'), 403);
     }
@@ -55,7 +63,7 @@ class RestaurantPolicy
             return Response::deny(__('general.have_permission'), 403);
         }
 
-        return $user->id === $restaurant->user_id ||$user->hasRole('admin')
+        return $this->ownsOrAdmin($user, $restaurant)
             ? Response::allow()
             : Response::deny(__('general.not_for_you'), 403);
     }
@@ -69,7 +77,7 @@ class RestaurantPolicy
             return Response::deny(__('general.have_permission'), 403);
         }
 
-        return $user->id === $restaurant->user_id ||$user->hasRole('admin')
+        return $this->ownsOrAdmin($user, $restaurant)
             ? Response::allow()
             : Response::deny(__('general.not_for_you'), 403);
     }
@@ -83,7 +91,7 @@ class RestaurantPolicy
             return Response::deny(__('general.have_permission'), 403);
         }
 
-        return $user->id === $restaurant->user_id ||$user->hasRole('admin')
+        return $this->ownsOrAdmin($user, $restaurant)
             ? Response::allow()
             : Response::deny(__('general.not_for_you'), 403);
     }

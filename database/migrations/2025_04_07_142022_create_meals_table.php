@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->foreignId('restaurant_id')->constrained('restaurants')->cascadeOnDelete();
             $table->foreignId('mealType_id')->constrained('meal_types')->cascadeOnDelete();
             $table->tinyInteger('availability_status')->default(0);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

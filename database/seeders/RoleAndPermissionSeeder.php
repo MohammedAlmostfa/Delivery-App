@@ -25,6 +25,15 @@ class RoleAndPermissionSeeder extends Seeder
         $permanentlyDeleteRestaurant = Permission::create(['name' => 'restaurant.permanentDelete', 'guard_name' => 'api']);
         $restoreRestaurant = Permission::create(['name' => 'restaurant.restore', 'guard_name' => 'api']); // Fixed "restor" to "restore"
 
+
+        $createMeal = Permission::create(['name' => 'meal.create', 'guard_name' => 'api']);
+        $updateMeal = Permission::create(['name' => 'meal.update', 'guard_name' => 'api']);
+        $forceDeleteMeal = Permission::create(['name' => 'meal.forceDelete', 'guard_name' => 'api']);
+        $permanentlyDeleteMeal = Permission::create(['name' => 'meal.permanentDelete', 'guard_name' => 'api']);
+        $restoreMeal = Permission::create(['name' => 'remealstaurant.restore', 'guard_name' => 'api']); // Fixed "restor" to "restore"
+
+
+
         // Assign permissions to admin role
         $adminRole->givePermissionTo([
             $createRestaurant,
@@ -32,11 +41,18 @@ class RoleAndPermissionSeeder extends Seeder
             $forceDeleteRestaurant,
             $permanentlyDeleteRestaurant,
             $restoreRestaurant,
+
         ]);
 
         // Assign permissions to manager role
         $managerRole->givePermissionTo([
             $updateRestaurant,
+            //meal
+            $createMeal,
+            $updateMeal,
+            $forceDeleteMeal,
+            $permanentlyDeleteMeal,
+            $restoreMeal,
         ]);
     }
 }

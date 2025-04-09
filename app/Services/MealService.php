@@ -19,15 +19,18 @@ class MealService
             // Create a meal record
             $meal = Meal::create([
                 'mealName' => $data['mealName'],
+                'description' => $data['description'],
                 'price' => $data['price'],
                 'mealType_id' => $data['mealType_id'],
                 'restaurant_id' => $data['restaurant_id'],
+                'time_of_prepare' => $data['time_of_prepare'],
             ]);
 
             // Success response
             return [
                 'status' => 200,
                 'message' => __('meal.meal_create_successful'),
+                'data'=>$data,
             ];
         } catch (\Exception $e) {
             // Log the error for debugging purposes
@@ -48,21 +51,24 @@ class MealService
      * @param Meal $meal The meal to be updated.
      * @return array Response status and message.
      */
-    public function updateMeal($data, $meal)
+    public function updateMeal($data, Meal $meal)
     {
         try {
             // Update the meal record
             $meal->update([
                 'mealName' => $data['mealName'] ?? $meal->mealName,
+                'description' => $data['description'] ?? $meal->description,
                 'price' => $data['price'] ?? $meal->price,
                 'mealType_id' => $data['mealType_id'] ?? $meal->mealType_id,
-                'availability_status'=>$data['availability_status'] ?? $meal->availability_status,
+                'availability_status' => $data['availability_status'] ?? $meal->availability_status,
+                'time_of_prepare' => $data['time_of_prepare'] ?? $meal->time_of_prepare,
             ]);
 
             // Success response
             return [
                 'status' => 200,
                 'message' => __('meal.meal_update_successful'),
+                'data'=> $meal,
             ];
         } catch (\Exception $e) {
             // Log the error for debugging purposes

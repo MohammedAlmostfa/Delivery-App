@@ -11,7 +11,6 @@ class UpdateMealData extends FormRequest
      */
     public function authorize(): bool
     {
-        // تأكد من السماح بتنفيذ الطلب
         return true;
     }
 
@@ -24,10 +23,12 @@ class UpdateMealData extends FormRequest
     {
         return [
             'mealName' => 'nullable|string|max:80',
+            'description'=>'nullable|string',
             'price' => 'nullable|numeric|min:0',
             'mealType_id' => 'nullable|exists:meal_types,id',
             'restaurant_id' => 'nullable|exists:restaurants,id',
             'availability_status' => 'nullable|integer|min:0|max:3',
+            'time_of_prepare'=>'nullable|date_format:H:i',
         ];
     }
 }

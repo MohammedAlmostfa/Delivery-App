@@ -24,9 +24,12 @@ class StoreMealData extends FormRequest
     {
         return [
             'mealName' => 'required|string|max:80',
+            'description'=>'required|string',
             'price' => 'required|numeric|min:0',
             'mealType_id' => 'required|exists:meal_types,id',
             'restaurant_id' => 'required|exists:restaurants,id',
+    'time_of_prepare' => 'required|date_format:H:i'
+
         ];
     }
 }

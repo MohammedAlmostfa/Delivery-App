@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\mealrequest\StoreMealData;
-use App\Http\Requests\mealrequest\UpdateMealData;
 use App\Models\Meal;
+use App\Models\Restaurant;
 use App\Services\MealService;
 use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\mealrequest\StoreMealData;
+use App\Http\Requests\mealrequest\UpdateMealData;
 
 class MealController extends Controller
 {
@@ -46,10 +47,9 @@ class MealController extends Controller
      */
     public function store(StoreMealData $request)
     {
-        Gate::authorize('create', Meal::class); // Authorization for creating a meal
-
+        $restaurant = Restaurant::findOrFail($request->restaurant_id);
+        Gate::authorize('createMeal', $restaurant);
         $validatedData = $request->validated(); // Validate incoming request data
-
         $result = $this->mealservice->createMeal($validatedData); // Call MealService to create meal
 
         // Return success or error based on the service response
