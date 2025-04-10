@@ -12,4 +12,9 @@ class RestaurantType extends Model
     {
         return $this->hasMany(Restaurant::class);
     }
+
+    public function rating()
+    {
+        return $this->hasMany(Rating::class);
+    }
 }

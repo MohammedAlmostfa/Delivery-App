@@ -6,6 +6,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Psy\Command\ListCommand\FunctionEnumerator;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -49,5 +50,10 @@ class User extends Authenticatable implements JWTSubject
     public function restaurant()
     {
         return $this->hasOne(Restaurant::class, 'user_id');
+    }
+
+    public function rating()
+    {
+        return $this->hasMany(Rating::class);
     }
 }

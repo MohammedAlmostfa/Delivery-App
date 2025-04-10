@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
              RoleAndPermissionSeeder::class,
              UserSeeder::class,
              RestaurantSeeder::class,
+             MealSeeder::class,
+             RatingSeeder::class,
          ]);
 
     }
