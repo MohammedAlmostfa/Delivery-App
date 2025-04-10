@@ -33,6 +33,10 @@ class RoleAndPermissionSeeder extends Seeder
         $restoreMeal = Permission::create(['name' => 'remealstaurant.restore', 'guard_name' => 'api']); // Fixed "restor" to "restore"
 
 
+        $createOffer = Permission::create(['name' => 'offer.create', 'guard_name' => 'api']);
+        $updateOffer  = Permission::create(['name' => 'offer.update', 'guard_name' => 'api']);
+        $deleteOffer  = Permission::create(['name' => 'offer.delet', 'guard_name' => 'api']);
+
 
         // Assign permissions to admin role
         $adminRole->givePermissionTo([
@@ -53,6 +57,9 @@ class RoleAndPermissionSeeder extends Seeder
             $forceDeleteMeal,
             $permanentlyDeleteMeal,
             $restoreMeal,
+            $createOffer,
+            $updateOffer,
+            $deleteOffer,
         ]);
     }
 }

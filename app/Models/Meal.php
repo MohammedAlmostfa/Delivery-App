@@ -72,4 +72,9 @@ class Meal extends Model
     {
         return $this->belongsTo(Restaurant::class, 'restaurant_id');
     }
+
+    public function offer()
+    {
+        return $this->hasMany(Offer::class);
+    }
 }

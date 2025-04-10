@@ -26,7 +26,6 @@ class UpdateMealData extends FormRequest
             'description'=>'nullable|string',
             'price' => 'nullable|numeric|min:0',
             'mealType_id' => 'nullable|exists:meal_types,id',
-            'restaurant_id' => 'nullable|exists:restaurants,id',
             'availability_status' => 'nullable|integer|min:0|max:3',
             'time_of_prepare'=>'nullable|date_format:H:i',
         ];

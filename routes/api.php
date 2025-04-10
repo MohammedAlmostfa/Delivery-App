@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
 use App\Http\Controllers\MealController;
+use App\Http\Controllers\OfferController;
 use App\Http\Controllers\RestaurantController;
 use App\Models\Restaurant;
 
@@ -35,6 +36,7 @@ Route::middleware('jwt')->group(function () {
     Route::apiResource("/meal", MealController::class);
     Route::post("/meal/permanent/{id}", [ MealController::class,'permanentDelete']);
     Route::post("/meal/restore/{id}", [ MealController::class,'restore']);
+    Route::apiResource("/offer", OfferController::class);
 
 
 

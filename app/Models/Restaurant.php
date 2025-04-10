@@ -35,12 +35,21 @@ class Restaurant extends Model
     {
         return $this->hasMany(Meal::class);  // Fixed method name
     }
-    public function offers()
-    {
-        return $this->hasMany(Offer::class);
-    }
+
     public function contactInf()
     {
         return $this->hasOne(ContactInf::class);
+    }
+
+    public function offers()
+    {
+        return $this->hasManyThrough(
+            Offer::class,
+            Meal::class,
+            'restaurant_id',
+            'meal_id',
+            'id',
+            'id'
+        );
     }
 }
