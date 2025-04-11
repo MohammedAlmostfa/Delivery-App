@@ -14,7 +14,7 @@ class OfferService
      *
      * @return array The status, message, and retrieved offers.
      */
-    public function getOffer()
+    public function getOffer($data)
     {
         try {
             $data = request()->all(); // Get request data safely
@@ -22,23 +22,32 @@ class OfferService
             $user = Auth::user();
             $latitude = $data['latitude'] ?? $user->latitude;
             $longitude = $data['longitude'] ?? $user->longitude;
-            $radius = $data['radius'] ?? "10"; // Default radius if none is provided
+            $radius = $data['radius'] ?? "100000"; // Default radius if none is provided
 
             // Retrieve offers with meal & restaurant details
+            $user = Auth::user();
+            $latitude = $data['latitude'] ?? $user->latitude;
+            $longitude = $data['longitude'] ?? $user->longitude;
+            $radius = $data['radius'] ?? 100000; // تحويل إلى عدد صحيح
+
+            $user = Auth::user();
+            $latitude = $data['latitude'] ?? $user->latitude;
+            $longitude = $data['longitude'] ?? $user->longitude;
+            $radius = $data['radius'] ?? 100000; // تحويل إلى عدد صحيح
+
             $offers = Offer::whereHas('meal.restaurant', function ($query) use ($latitude, $longitude, $radius) {
-                $query->nearby($latitude, $longitude, $radius)
-                      ->withAvg('ratings', 'avg_restaurant_rating');
-            })->with([
+                $query->nearby($latitude, $longitude, $radius);
+            })
+            ->with([
                 'meal' => function ($query) {
-                    $query->select('id', 'mealName', 'price', 'restaurant_id', 'latitude', 'longitude');
+                    $query->select('id', 'mealName', 'price', 'restaurant_id');
                 },
-                'meal.restaurant' => function ($query) use ($latitude, $longitude, $radius) {
-                    $query->nearby($latitude, $longitude, $radius)
-                          ->withAvg('ratings', 'avg_restaurant_rating');
+                'meal.restaurant' => function ($query) {
+                    $query->select('id', 'restaurant_name', 'latitude', 'longitude')
+                          ->withAvg('ratings as avg_rating', 'rate');
                 }
-            ])->orderBy('offers.from', 'asc')->paginate(10);
-
-
+            ])
+            ->paginate(10);
 
 
 

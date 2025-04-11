@@ -133,13 +133,22 @@ class Restaurant extends Model
 
         return $model;
     }
-    public function scopeNearby($query, $latitude, $longitude, $radius = 1000)
+    // app/Models/Restaurant.php
+
+    public function scopeNearby($query, $latitude, $longitude, $radius)
     {
-        return $query->selectRaw("
-            *,
-            ROUND(( 6371 * acos( cos( radians(?) ) * cos( radians(latitude) ) * cos( radians(longitude) - radians(?) )
-            + sin( radians(?) ) * sin( radians(latitude) ) ) ), 1) AS distance
-        ", [$latitude, $longitude, $latitude])
-        ->having('distance', '<=', $radius);
+        return $query->selectRaw(
+            "id, restaurant_name, latitude, longitude,
+        (6371 * acos(
+            cos(radians(?)) *
+            cos(radians(latitude)) *
+            cos(radians(longitude) - radians(?)) +
+            sin(radians(?)) *
+            sin(radians(latitude))
+        )) AS distance",
+            [$latitude, $longitude, $latitude]
+        )
+        ->having('distance', '<=', $radius)
+        ->orderBy('distance');
     }
 }

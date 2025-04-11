@@ -43,7 +43,7 @@ class AuthService
             }
 
             // Store user data in cache for 1 hour
-            Cache::put($userDataKey, $data, 3600);
+            Cache::put($userDataKey, $data, 1800);
 
             // Generate a unique cache key for the verification code
             $verifkey = 'verification_code_' . $data['email'];
@@ -60,7 +60,7 @@ class AuthService
 
             // Generate a random 6-digit code and store it in the cache
             $code = Cache::remember($verifkey, 1800, function () {
-                return random_int(100000, 999999);
+                return random_int(1000, 9999);
             });
 
             // Trigger the Registered event to send the verification email
@@ -195,7 +195,7 @@ class AuthService
 
                 // Generate a new 6-digit random code and store it in the cache for 1 hour
                 $code = Cache::remember($verifkey, 1800, function () {
-                    return random_int(100000, 999999);
+                    return random_int(1000, 9999);
                 });
 
                 // Trigger the Registered event to send the new verification email

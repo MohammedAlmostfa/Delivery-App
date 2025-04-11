@@ -30,8 +30,8 @@ class ForgetPasswordService
             Cache::delete($key);
 
             // Generate a 6-digit random code and store it in the cache for 1 hour
-            $code = Cache::remember($key, 3600, function () {
-                return random_int(100000, 999999);
+            $code = Cache::remember($key, 1800, function () {
+                return random_int(1000, 9999);
             });
 
             // Send the code to the user's email
