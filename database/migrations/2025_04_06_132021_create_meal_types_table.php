@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('meal_types', function (Blueprint $table) {
             $table->id();
             $table->string('mealTypeName');
+            $table->tinyInteger('mealTypeType');
             $table->timestamps();
         });
 

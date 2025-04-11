@@ -27,4 +27,16 @@ class UpdateOfferData extends FormRequest
             'new_price' => 'nullable|numeric|min:0'
         ];
     }
+
+
+    /**
+    * Prepare the input before validation to store only date (without time).
+    */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'from' => date('Y-m-d', strtotime($this->input('from'))),
+            'to' => date('Y-m-d', strtotime($this->input('to'))),
+        ]);
+    }
 }

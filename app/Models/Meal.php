@@ -77,4 +77,8 @@ class Meal extends Model
     {
         return $this->hasMany(Offer::class);
     }
+
+
+
+
 }

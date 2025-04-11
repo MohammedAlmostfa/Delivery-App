@@ -14,6 +14,10 @@ class RestaurantResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+              'restaurant_id' => $this->id,
+              'restaurant_name' => $this->restaurant_name,
+              'average_rating' => (float) $this->restaurant_rate_avg,
+        ];
     }
 }

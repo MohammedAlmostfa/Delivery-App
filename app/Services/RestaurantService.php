@@ -46,11 +46,28 @@ class RestaurantService
      *
      * @return array An associative array containing the status, message, and data.
      */
-    public function getNearbyRestaurantsAndOffers()
+    public function getNearRestaurant($data)
     {
         try {
-            // Fetch all restaurants with their offers
-            $restaurants = Restaurant::with('offers')->get();
+
+            $user=Auth::user();
+
+            $latitude = $data['latitude'] ??$user->latitude;
+            $longitude =$data['longitude']??$user->longitude;
+
+            $radius ="10";
+
+
+            $restaurants = Restaurant::selectRaw("
+                *,
+                ROUND(( 6371 * acos( cos( radians(?) ) * cos( radians(latitude) ) * cos( radians(longitude) - radians(?) )
+                + sin( radians(?) ) * sin( radians(latitude) ) ) ), 1) AS distance
+            ", [$latitude, $longitude, $latitude])
+             ->having('distance', '<=', $radius)
+             ->orderBy('distance', 'asc')
+             ->withAvg('ratings as restaurant_rate_avg', 'rate')
+             ->paginate(10);
+
 
             return [
                 'status' => 200,
@@ -58,8 +75,7 @@ class RestaurantService
                 'data' => $restaurants,
             ];
         } catch (\Exception $e) {
-            // Log the error for debugging
-            Log::error("Error in fetching nearby restaurants and offers: " . $e->getMessage());
+            Log::error("Error in fetching nearby restaurants: " . $e->getMessage());
 
             return [
                 'status' => 500,
@@ -69,6 +85,7 @@ class RestaurantService
             ];
         }
     }
+
 
     /**
      * Create a new restaurant record.

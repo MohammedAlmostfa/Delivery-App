@@ -23,11 +23,20 @@ class StoreOfferData extends FormRequest
     {
         return [
             'meal_id' => 'required|exists:meals,id',
-            'from' => 'required|date|after_or_equal:now',
+            'from' => 'required|date|after_or_equal:today', // Ensuring only the date part
             'to' => 'required|date|after:from',
             'new_price' => 'required|numeric|min:0'
         ];
     }
 
-
+    /**
+     * Prepare the input before validation to store only date (without time).
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'from' => date('Y-m-d', strtotime($this->input('from'))),
+            'to' => date('Y-m-d', strtotime($this->input('to'))),
+        ]);
+    }
 }

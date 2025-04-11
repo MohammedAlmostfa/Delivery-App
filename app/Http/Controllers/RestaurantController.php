@@ -8,6 +8,7 @@ use App\Services\RestaurantService;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Resources\RestaurantResource;
 use App\Http\Requests\RestaurantRequest\StoreRestaurantData;
+use App\Http\Requests\RestaurantRequest\getNearRestuarantRequest;
 use App\Http\Requests\RestaurantRequest\UpdateRestaurantData; // Fixed the casing inconsistency
 
 class RestaurantController extends Controller
@@ -39,8 +40,18 @@ class RestaurantController extends Controller
         $result = $this->restaurantservice->getAllRestaurants();
 
         // Check the status of the service response
-        return $result['status'] === 201
+        return $result['status'] === 200
                ? self::paginated($result['data'], RestaurantResource::class, $result['message'], $result['status'])
+               : self::error(null, $result['message'], $result['status']);
+    }
+    public function getNearRestauran(getNearRestuarantRequest $request)
+    {
+        $validatedData=$request->validated();
+        $result = $this->restaurantservice->getNearRestaurant($validatedData);
+
+        // Check the status of the service response
+        return $result['status'] === 200
+                 ? self::paginated($result['data'], RestaurantResource::class, $result['message'], $result['status'])
                : self::error(null, $result['message'], $result['status']);
     }
 
