@@ -51,24 +51,13 @@ class RestaurantService
         try {
 
             $user = Auth::user();
-
             $latitude = $data['latitude'] ?? $user->latitude;
             $longitude = $data['longitude'] ?? $user->longitude;
             $radius = $data['radius'] ?? $user->longitude ?? "10";
-
-
-
-            $restaurants = Restaurant::selectRaw("
-                *,
-                ROUND(( 6371 * acos( cos( radians(?) ) * cos( radians(latitude) ) * cos( radians(longitude) - radians(?) )
-                + sin( radians(?) ) * sin( radians(latitude) ) ) ), 1) AS distance
-            ", [$latitude, $longitude, $latitude])
-                ->having('distance', '<=', $radius)
-                ->orderBy('distance', 'asc')
-                ->withAvg('ratings as restaurant_rate_avg', 'rate')
-                ->paginate(10);
-
-
+            $restaurants = Restaurant::nearby($latitude, $longitude, $radius)
+                         ->orderBy('distance', 'asc')
+                            ->withAvg('ratings', 'rate')
+                            ->paginate(10);
             return [
                 'status' => 200,
                 'message' => __('restaurant.nearby_restaurants_fetched'),

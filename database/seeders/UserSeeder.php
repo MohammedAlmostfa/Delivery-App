@@ -15,41 +15,26 @@ class UserSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        // Create an admin user
-        $adminUser = User::create([
-            'name' => 'adminUser',
-            'phone' => substr($faker->numerify('##########'), 0, 10),
-            'email' => 'adminUser@gmail.com',
-            'password' => bcrypt('P@ssw0rd123'),
-        ]);
-        $adminUser->assignRole('admin');
+        foreach (['admin', 'manager', 'user'] as $role) {
+            User::create([
+                'name' => $role,
+                'phone' => substr($faker->numerify('##########'), 0, 10),
+                'email' => "{$role}User@gmail.com",
+                'password' => bcrypt('P@ssw0rd123'),
+                'latitude' => $faker->latitude, // موقع عشوائي أولي
+                'longitude' => $faker->longitude,
+            ])->assignRole($role);
+        }
 
-        // Create a manager user
-        $managerUser = User::create([
-            'name' => 'managerUser',
-            'phone' => substr($faker->numerify('##########'), 0, 10),
-            'email' => 'managerUser@gmail.com',
-            'password' => bcrypt('P@ssw0rd123'),
-        ]);
-        $managerUser->assignRole('manager');
-        // Create a manager user
-        $userUser = User::create([
-            'name' => 'userUser',
-            'phone' => substr($faker->numerify('##########'), 0, 10),
-            'email' => 'userUser@gmail.com',
-            'password' => bcrypt('P@ssw0rd123'),
-        ]);
-        $userUser->assignRole('user');
-
-        // Create random users
         for ($i = 0; $i < 10; $i++) {
-            $user = User::create([
+            User::create([
                 'name' => $faker->name(),
                 'phone' => substr($faker->numerify('##########'), 0, 10),
                 'email' => $faker->unique()->safeEmail(),
                 'password' => bcrypt('P@ssw0rd123'),
-            ]);
-            $user->assignRole($faker->randomElement(['admin', 'user', 'manager']));
+                'latitude' => $faker->latitude,
+                'longitude' => $faker->longitude,
+            ])->assignRole($faker->randomElement(['admin', 'user', 'manager']));
         }
     }
 }

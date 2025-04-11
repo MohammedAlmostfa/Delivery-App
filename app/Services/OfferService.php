@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Meal;
 use App\Models\Offer;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class OfferService
 {
@@ -16,15 +17,31 @@ class OfferService
     public function getOffer()
     {
         try {
-            // Retrieve offers with meal details and associated restaurant information
-            $offers = Offer::with([
+            $data = request()->all(); // Get request data safely
+
+            $user = Auth::user();
+            $latitude = $data['latitude'] ?? $user->latitude;
+            $longitude = $data['longitude'] ?? $user->longitude;
+            $radius = $data['radius'] ?? "10"; // Default radius if none is provided
+
+            // Retrieve offers with meal & restaurant details
+            $offers = Offer::whereHas('meal.restaurant', function ($query) use ($latitude, $longitude, $radius) {
+                $query->nearby($latitude, $longitude, $radius)
+                      ->withAvg('ratings', 'avg_restaurant_rating');
+            })->with([
                 'meal' => function ($query) {
-                    $query->select('id', 'mealName', 'price', 'restaurant_id');
+                    $query->select('id', 'mealName', 'price', 'restaurant_id', 'latitude', 'longitude');
                 },
-                'meal.restaurant' => function ($query) {
-                    $query->select('id', 'restaurant_name')->withAvg('ratings as avg_restaurant_rating', 'rate');
+                'meal.restaurant' => function ($query) use ($latitude, $longitude, $radius) {
+                    $query->nearby($latitude, $longitude, $radius)
+                          ->withAvg('ratings', 'avg_restaurant_rating');
                 }
-            ])->orderBy('from', 'asc')->paginate(10);
+            ])->orderBy('offers.from', 'asc')->paginate(10);
+
+
+
+
+
 
             return [
                 'status' => 200,
