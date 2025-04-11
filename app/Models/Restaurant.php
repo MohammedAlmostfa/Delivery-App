@@ -94,4 +94,43 @@ class Restaurant extends Model
             'id'               // Primary key in the meals table
         );
     }
+
+
+
+    public function scopeFilterBy($model, array $filteringData)
+    {
+
+
+        if (isset($filteringData['restaurantType_id'])) {
+            $model->whereDate('restaurantType_id', '>=', $filteringData['restaurantType_id']);
+        }
+
+        if (isset($filteringData['startTime'])) {
+            $model->whereTime('trip_start', '>=', $filteringData['startTime']);
+        }
+
+        if (isset($filteringData['from'])) {
+            $model->where('from', $filteringData['from']);
+        }
+
+        if (isset($filteringData['to'])) {
+            $model->where('to', $filteringData['to']);
+        }
+
+        if (isset($filteringData['status'])) {
+            $model->where('trips.status', $filteringData['status']);
+        }
+
+        if (isset($filteringData['seat_price'])) {
+            $model->where('seat_price', '<=', $filteringData['seat_price'])
+                 ->orderBy('seat_price', 'asc');
+        }
+
+        if (isset($filteringData['available_seats'])) {
+            $model->where('available_seats', '>=', $filteringData['available_seats'])
+                 ->orderBy('available_seats', 'asc');
+        }
+
+        return $model;
+    }
 }

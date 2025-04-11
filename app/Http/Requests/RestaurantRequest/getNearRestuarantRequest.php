@@ -22,8 +22,10 @@ class getNearRestuarantRequest extends FormRequest
     public function rules(): array
     {
         return [
-         'latitude' => 'nullable',
+        'latitude' => 'nullable',
         'longitude' => 'nullable',
+        'radius'=>'nullable|integer',
+        'restaurantType_id'=>'nullable|exists:meal_types,id',
         ];
     }
 }

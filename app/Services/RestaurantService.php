@@ -50,12 +50,12 @@ class RestaurantService
     {
         try {
 
-            $user=Auth::user();
+            $user = Auth::user();
 
-            $latitude = $data['latitude'] ??$user->latitude;
-            $longitude =$data['longitude']??$user->longitude;
+            $latitude = $data['latitude'] ?? $user->latitude;
+            $longitude = $data['longitude'] ?? $user->longitude;
+            $radius = $data['radius'] ?? $user->longitude ?? "10";
 
-            $radius ="10";
 
 
             $restaurants = Restaurant::selectRaw("
@@ -63,10 +63,10 @@ class RestaurantService
                 ROUND(( 6371 * acos( cos( radians(?) ) * cos( radians(latitude) ) * cos( radians(longitude) - radians(?) )
                 + sin( radians(?) ) * sin( radians(latitude) ) ) ), 1) AS distance
             ", [$latitude, $longitude, $latitude])
-             ->having('distance', '<=', $radius)
-             ->orderBy('distance', 'asc')
-             ->withAvg('ratings as restaurant_rate_avg', 'rate')
-             ->paginate(10);
+                ->having('distance', '<=', $radius)
+                ->orderBy('distance', 'asc')
+                ->withAvg('ratings as restaurant_rate_avg', 'rate')
+                ->paginate(10);
 
 
             return [
@@ -206,11 +206,11 @@ class RestaurantService
     }
 
     /**
- * Permanently delete a restaurant from storage.
- *
- * @param Restaurant $restaurant The restaurant instance to delete permanently.
- * @return array An associative array containing the status and message.
- */
+     * Permanently delete a restaurant from storage.
+     *
+     * @param Restaurant $restaurant The restaurant instance to delete permanently.
+     * @return array An associative array containing the status and message.
+     */
     public function permanentDeleteRestaurant($restaurant)
     {
         try {
