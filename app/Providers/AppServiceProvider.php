@@ -3,9 +3,11 @@ namespace App\Providers;
 
 use App\Models\Meal;
 use App\Models\Offer;
+use App\Models\Order;
 use App\Models\Restaurant;
 use App\Policies\MealPolicy;
 use App\Policies\OfferPolicy;
+use App\Policies\OrderPolicy;
 use App\Policies\RestaurantPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -32,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Restaurant::class, RestaurantPolicy::class);
         Gate::policy(Meal::class, MealPolicy::class);
         Gate::policy(Offer::class, OfferPolicy::class);
-
+        Gate::policy(Order::class, OrderPolicy::class);
 
 
     }
