@@ -4,8 +4,9 @@ namespace App\Services;
 
 use App\Models\ContactInf;
 use App\Models\Restaurant;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Service class responsible for handling restaurant-related business logic.
@@ -85,6 +86,8 @@ class RestaurantService
     public function createRestaurant($data)
     {
         try {
+            DB::beginTransaction();
+
             // Create a new restaurant record
             $restaurant = Restaurant::create([
                 'restaurant_name' => $data['restaurant_name'],
@@ -109,6 +112,8 @@ class RestaurantService
                 'data' => $restaurant,
             ];
         } catch (\Exception $e) {
+            DB::rollBack();
+
             // Log the error for debugging
             Log::error("Error in creating restaurant: " . $e->getMessage());
             return [
@@ -131,6 +136,8 @@ class RestaurantService
     public function updateRestaurant(Restaurant $restaurant, $data)
     {
         try {
+            DB::beginTransaction();
+
             // Update the restaurant record with the provided data
             $restaurant->update([
                 'restaurant_name' => $data['restaurant_name'] ?? $restaurant->restaurant_name,
@@ -154,6 +161,8 @@ class RestaurantService
                 'data' => $restaurant,
             ];
         } catch (\Exception $e) {
+            DB::rollBack();
+
             // Log the error for debugging
             Log::error("Error in updating restaurant: " . $e->getMessage());
             return [

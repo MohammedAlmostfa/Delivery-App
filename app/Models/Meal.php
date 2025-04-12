@@ -78,7 +78,10 @@ class Meal extends Model
         return $this->hasMany(Offer::class);
     }
 
-
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 
 
 }

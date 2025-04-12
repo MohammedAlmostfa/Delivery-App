@@ -48,10 +48,6 @@ class OfferService
                 }
             ])
             ->paginate(10);
-
-
-
-
             return [
                 'status' => 200,
                 'message' => __('offer.offer_get_successful'), // Success message
