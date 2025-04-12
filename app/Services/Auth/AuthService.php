@@ -142,6 +142,7 @@ class AuthService
                     'status' => 200,
                     'data' => [
                         'token' => $token, // Return the generated token
+                        'user_id'=> $user->id
 
                     ],
                 ];
@@ -226,6 +227,45 @@ class AuthService
                 'message' => [
                     'errorDetails' => [__('auth.general_error')],
                 ],
+            ];
+        }
+    }
+
+
+
+    /**
+ * Update the user's location.
+ *
+ * This method updates the user's latitude and longitude, ensuring that the existing user data remains unchanged.
+ * It logs any errors encountered during the process and returns appropriate success or failure messages.
+ *
+ * @param array $data Array containing 'latitude' and 'longitude'.
+ * @param User $user The user model instance whose location needs to be updated.
+ * @return array Response array with a message and status code.
+ */
+    public function setLocation($data, User $user)
+    {
+        try {
+            // Update only latitude and longitude without modifying other user details
+            $user->update([
+                'latitude' => $data["latitude"],  // Set the new latitude
+                'longitude' => $data["longitude"], // Set the correct longitude
+            ]);
+
+            // Return success response
+            return [
+                'message' => __('auth.location_updated'),
+                'status' => 200,
+            ];
+
+        } catch (\Exception $e) {
+            // Log any errors encountered while updating location
+            Log::error('Error updating location: ' . $e->getMessage());
+
+            // Return failure response
+            return [
+                'status' => 500,
+                'message' => __('auth.general_error'),
             ];
         }
     }

@@ -47,34 +47,43 @@ class RestaurantService
      *
      * @return array An associative array containing the status, message, and data.
      */
-    public function getNearRestaurant($data)
+    public function getNearRestaurant($filteringData)
     {
         try {
-
             $user = Auth::user();
-            $latitude = $data['latitude'] ?? $user->latitude;
-            $longitude = $data['longitude'] ?? $user->longitude;
-            $radius = $data['radius'] ?? $user->longitude ?? "10";
+
+            // Retrieve location details with default values
+            $latitude = $filteringData['latitude'] ?? $user->latitude;
+            $longitude = $filteringData['longitude'] ?? $user->longitude;
+            $radius = $filteringData['radius'] ?? $user->radius ?? 10; // Fixed incorrect default value
+
+            // Fetch nearby restaurants and apply filtering
             $restaurants = Restaurant::nearby($latitude, $longitude, $radius)
-                         ->orderBy('distance', 'asc')
-                            ->withAvg('ratings', 'rate')
-                            ->paginate(10);
+                ->withAvg('ratings', 'rate')
+                ->when(!empty($filteringData), function ($query) use ($filteringData) {
+                    $query->filterBy($filteringData);
+                })
+                ->paginate(10);
+
             return [
                 'status' => 200,
                 'message' => __('restaurant.nearby_restaurants_fetched'),
                 'data' => $restaurants,
             ];
+
         } catch (\Exception $e) {
-            Log::error("Error in fetching nearby restaurants: " . $e->getMessage());
+            // Improved error logging
+            Log::error("Error fetching nearby restaurants: " . $e->getMessage(), ['exception' => $e]);
 
             return [
                 'status' => 500,
                 'message' => [
-                    'errorDetails' => [__('general.general_erorr')],
+                    'errorDetails' => [__('general.general_error')],
                 ],
             ];
         }
     }
+
 
 
     /**

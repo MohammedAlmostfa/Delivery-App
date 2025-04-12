@@ -58,6 +58,8 @@ class Restaurant extends Model
         return $this->hasMany(Meal::class); // A restaurant can have multiple meals.
     }
 
+
+
     /**
      * Get the contact information of the restaurant.
      *
@@ -97,42 +99,37 @@ class Restaurant extends Model
 
 
 
-    public function scopeFilterBy($model, array $filteringData)
+    public function scopeFilterBy($query, array $filteringData)
     {
-
-
-        if (isset($filteringData['restaurantType_id'])) {
-            $model->whereDate('restaurantType_id', '>=', $filteringData['restaurantType_id']);
+        // Filter by restaurant type
+        if (!empty($filteringData['restaurantType']) && is_array($filteringData['restaurantType'])) {
+            $restaurantTypeIds = array_column($filteringData['restaurantType'], 'restaurantType_id');
+            $query->whereIn('restaurantType_id', $restaurantTypeIds);
         }
 
-        if (isset($filteringData['startTime'])) {
-            $model->whereTime('trip_start', '>=', $filteringData['startTime']);
+        // Filter by selected meal types correctly
+        if (!empty($filteringData['mealType']) && is_array($filteringData['mealType'])) {
+            $mealTypeIds = array_column($filteringData['mealType'], 'mealType_id');
+
+            if (!empty($mealTypeIds)) {
+                // Filtering through meals instead of mealTypes directly
+                $query->whereHas('meals', function ($mealQuery) use ($mealTypeIds) {
+                    $mealQuery->whereIn('mealType_id', $mealTypeIds);
+                });
+            }
         }
 
-        if (isset($filteringData['from'])) {
-            $model->where('from', $filteringData['from']);
-        }
-
-        if (isset($filteringData['to'])) {
-            $model->where('to', $filteringData['to']);
-        }
-
-        if (isset($filteringData['status'])) {
-            $model->where('trips.status', $filteringData['status']);
-        }
-
-        if (isset($filteringData['seat_price'])) {
-            $model->where('seat_price', '<=', $filteringData['seat_price'])
-                 ->orderBy('seat_price', 'asc');
-        }
-
-        if (isset($filteringData['available_seats'])) {
-            $model->where('available_seats', '>=', $filteringData['available_seats'])
-                 ->orderBy('available_seats', 'asc');
-        }
-
-        return $model;
+        return $query;
     }
+
+
+
+
+
+
+
+
+
     // app/Models/Restaurant.php
 
     public function scopeNearby($query, $latitude, $longitude, $radius)
@@ -148,7 +145,7 @@ class Restaurant extends Model
         )) AS distance",
             [$latitude, $longitude, $latitude]
         )
-        ->having('distance', '<=', $radius)
-        ->orderBy('distance');
+            ->having('distance', '<=', $radius)
+            ->orderBy('distance', 'asc');
     }
 }

@@ -21,7 +21,7 @@ class MealSeeder extends Seeder
                 'price' => $faker->randomFloat(2, 5, 50),
                 'description' => $faker->sentence,
                 'mealType_id' => $faker->numberBetween(1, 10),
-                'restaurant_id' => $faker->numberBetween(1, 10),
+                'restaurant_id' => $faker->numberBetween(1, 5),
                 'availability_status' => $faker->randomElement([
                     'Within less than an hour',
                     'Available',

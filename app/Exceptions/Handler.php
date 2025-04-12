@@ -37,7 +37,7 @@ class Handler extends ExceptionHandler
                 'errors' => [
                     'errorDetails' => $exception->getMessage(),
                 ]
-            ], $exception->status ?? 403); // Use status code from exception or default to 403
+            ], $exception->status ?? 403);
         }
         // Handle ModelNotFoundException
         if ($exception instanceof ModelNotFoundException) {

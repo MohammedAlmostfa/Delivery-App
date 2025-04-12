@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\RestaurantRequest;
+namespace App\Http\Requests\AuthRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class getNearRestuarantRequest extends FormRequest
+class SetLocationData extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,8 @@ class getNearRestuarantRequest extends FormRequest
     public function rules(): array
     {
         return [
-        'latitude' => 'nullable',
-        'longitude' => 'nullable',
-        'radius'=>'nullable|integer',
-        'restaurantType_id'=>'nullable|exists:meal_types,id',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ];
     }
 }

@@ -12,8 +12,14 @@ use App\Http\Requests\AuthRequest\ResendCode;
 use App\Http\Requests\AuthRequest\LoginRequest;
 use App\Http\Requests\AuthRequest\RegisterRequest;
 use App\Http\Requests\AuthRequest\GoogelloginRequest;
+use App\Http\Requests\AuthRequest\SetLocationData;
 use App\Http\Requests\AuthRequest\VerficationRequest;
 
+/**
+ * Class AuthController
+ *
+ * Handles authentication-related operations, including registration, login, verification, and token management.
+ */
 class AuthController extends Controller
 {
     /**
@@ -26,7 +32,7 @@ class AuthController extends Controller
     /**
      * Create a new AuthController instance.
      *
-     * @param AuthService $authService
+     * @param AuthService $authService The authentication service used to handle logic.
      */
     public function __construct(AuthService $authService)
     {
@@ -36,18 +42,21 @@ class AuthController extends Controller
     /**
      * Register a new user.
      *
+     * This method validates the request and forwards the registration logic
+     * to the AuthService. If successful, a response containing verification details is returned.
+     *
      * @param RegisterRequest $request The request containing user registration data.
      * @return \Illuminate\Http\JsonResponse
      */
     public function register(RegisterRequest $request)
     {
-        // Validate the request data
+        // Validate request data
         $credentials = $request->validated();
 
-        // Call the AuthService to register the user
+        // Register the user via AuthService
         $result = $this->authService->register($credentials);
 
-        // Return a success or error response based on the result
+        // Return JSON response
         return $result['status'] === 201
             ? self::success($result['data'], $result['message'], $result['status'])
             : self::error(null, $result['message'], $result['status']);
@@ -56,58 +65,80 @@ class AuthController extends Controller
     /**
      * Verify the user's account using the verification code.
      *
+     * This method validates the verification request and confirms the provided code.
+     * If valid, the user account is created and authenticated.
+     *
      * @param VerficationRequest $request The request containing email and verification code.
      * @return \Illuminate\Http\JsonResponse
      */
     public function verify(VerficationRequest $request)
     {
-        // Validate the request data
         $validationData = $request->validated();
 
-        // Call the AuthService to verify the account
+        // Verify account via AuthService
         $result = $this->authService->verficationacount($validationData);
 
-        // Return a success or error response based on the result
         return $result['status'] === 200
             ? self::success($result['data'], $result['message'], $result['status'])
+            : self::error(null, $result['message'], $result['status']);
+    }
+
+    /**
+     * Set the user's location.
+     *
+     * Updates the user's latitude and longitude without modifying other user information.
+     *
+     * @param SetLocationData $request The request containing latitude and longitude.
+     * @param User $user The authenticated user instance.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function setLocation(SetLocationData $request, User $user)
+    {
+        $validationData = $request->validated();
+
+        // Update user location via AuthService
+        $result = $this->authService->setLocation($validationData, $user);
+
+        return $result['status'] === 200
+            ? self::success(null, $result['message'], $result['status'])
             : self::error(null, $result['message'], $result['status']);
     }
 
     /**
      * Resend the verification code to the user's email.
      *
-     * @param ResendCode $request The request containing the user's email.
+     * If the previous code expired, a new one is sent.
+     *
+     * @param ResendCode $request The request containing user email.
      * @return \Illuminate\Http\JsonResponse
      */
     public function resendCode(ResendCode $request)
     {
-        // Validate the request data
         $validationData = $request->validated();
 
-        // Call the AuthService to resend the verification code
+        // Resend verification code via AuthService
         $result = $this->authService->resendCode($validationData);
 
-        // Return a success or error response based on the result
         return $result['status'] === 200
             ? self::success($result['data'], $result['message'], $result['status'])
             : self::error(null, $result['message'], $result['status']);
     }
 
     /**
-     * Login an existing user.
+     * Log in an existing user.
      *
-     * @param LoginRequest $request The request containing user login credentials.
+     * Validates credentials and returns a JWT token on successful authentication.
+     *
+     * @param LoginRequest $request The request containing user credentials.
      * @return \Illuminate\Http\JsonResponse
      */
     public function login(LoginRequest $request)
     {
-        // Validate the request data
         $credentials = $request->validated();
 
-        // Call the AuthService to login the user
+        // Authenticate user via AuthService
         $result = $this->authService->login($credentials);
 
-        // Return a success or error response based on the result
         return $result['status'] === 201
             ? self::success($result['data'], $result['message'], $result['status'])
             : self::error(null, $result['message'], $result['status']);
@@ -116,50 +147,50 @@ class AuthController extends Controller
     /**
      * Logout the authenticated user.
      *
+     * Destroys the user's session and invalidates the JWT token.
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function logout()
     {
-        // Call the AuthService to logout the user
         $result = $this->authService->logout();
 
-        // Return a success or error response based on the result
         return $result['status'] === 200
             ? self::success(null, $result['message'], $result['status'])
             : self::error(null, $result['message'], $result['status']);
     }
 
     /**
-     * Refresh the JWT token for the authenticated user.
+     * Refresh the JWT token.
+     *
+     * Generates a new token if the current one is expired.
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function refresh()
     {
-        // Call the AuthService to refresh the token
         $result = $this->authService->refresh();
 
-        // Return a success or error response based on the result
         return $result['status'] === 200
             ? self::success($result['data'], $result['message'], $result['status'])
             : self::error(null, $result['message'], $result['status']);
     }
 
     /**
-     * Login a user using Google OAuth.
+     * Login using Google OAuth.
+     *
+     * Authenticates the user using Google login.
      *
      * @param GoogelloginRequest $request The request containing Google access token.
      * @return \Illuminate\Http\JsonResponse
      */
     public function loginwithGoogel(GoogelloginRequest $request)
     {
-        // Validate the request data
         $validationData = $request->validated();
 
-        // Call the AuthService to login the user using Google
+        // Authenticate user via Google OAuth using AuthService
         $result = $this->authService->loginwithgoogel($validationData['googleToken']);
 
-        // Return a success or error response based on the result
         return $result['status'] === 200
             ? self::success($result['data'], $result['message'], $result['status'])
             : self::error(null, $result['message'], $result['status']);
