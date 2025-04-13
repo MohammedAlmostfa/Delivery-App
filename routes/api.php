@@ -8,6 +8,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
+use App\Http\Controllers\RatingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,7 @@ use App\Http\Controllers\Auth\ForgetPasswordController;
 | Authentication Routes
 | These routes handle user registration and login.
 */
+
 Route::post('/register', [AuthController::class, 'register']); // Register a new user
 Route::post('/login', [AuthController::class, 'login']); // Login an existing user
 
@@ -69,6 +71,7 @@ Route::middleware('jwt')->group(function () {
     | Meal Routes
     | Manage meals associated with restaurants.
     */
+    Route::get('/meal/restaurant/{restaurant}', [MealController::class, 'getMeal']);
     Route::apiResource("/meal", MealController::class); // Standard CRUD operations for meals
     Route::post("/meal/permanent/{id}", [MealController::class, 'permanentDelete']); // Permanently delete a meal (undo soft delete)
     Route::post("/meal/restore/{id}", [MealController::class, 'restore']); // Restore a soft-deleted meal
@@ -78,6 +81,12 @@ Route::middleware('jwt')->group(function () {
     | Manage restaurant offers.
     */
     Route::apiResource("/offer", OfferController::class); // Standard CRUD operations for offers
+
+    /*
+  | Rating Routes
+  | Manage restaurant Rating.
+  */
+    Route::apiResource("/rating", RatingController::class);
 
     /*
     | Order Routes

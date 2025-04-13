@@ -8,6 +8,7 @@ use App\Services\MealService;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\mealrequest\StoreMealData;
 use App\Http\Requests\mealrequest\UpdateMealData;
+use App\Http\Resources\MealResource;
 
 class MealController extends Controller
 {
@@ -32,11 +33,14 @@ class MealController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function getMeal(Restaurant $restaurant)
     {
-        // Logic for fetching and displaying a list of meals
+        $result = $this->mealservice->getMeal($restaurant);
+        // Return success or error based on the service response
+        return $result['status'] === 200
+               ? self::paginated($result['data'], MealResource::class, $result['message'], $result['status'])
+               : self::error(null, $result['message'], $result['status']);
     }
-
     /**
      * Store a new meal in the database.
      *

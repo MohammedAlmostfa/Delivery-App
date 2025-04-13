@@ -3,10 +3,45 @@
 namespace App\Services;
 
 use App\Models\Meal;
+use App\Models\Restaurant;
 use Illuminate\Support\Facades\Log;
 
 class MealService
 {
+
+    public function getMeal(Restaurant $restaurant)
+    {
+        try {
+
+            $meals = $restaurant
+                ->with([
+                    'meals' => function ($query) {
+                        $query->select('id', 'mealName', 'price', 'restaurant_id', 'mealType_id', 'time_of_prepare');
+                    },
+                    'meals.mealType' => function ($query) {
+                        $query->select('id', 'mealTypeName', 'mealTypeType');
+                    },
+                ])
+                ->paginate(10);
+
+            return [
+                'status' => 200,
+                'message' => __('meal.meal_retrieved_successfully'),
+                'data' => $meals,
+            ];
+        } catch (\Exception $e) {
+
+            Log::error("Error retrieving meals: " . $e->getMessage());
+
+            // إرجاع استجابة الخطأ
+            return [
+                'status' => 500,
+                'message' => __('general.general_error'),
+            ];
+        }
+    }
+
+
     /**
      * Create a new meal record in the database.
      *
@@ -30,7 +65,7 @@ class MealService
             return [
                 'status' => 200,
                 'message' => __('meal.meal_create_successful'),
-                'data'=>$data,
+                'data' => $data,
             ];
         } catch (\Exception $e) {
             // Log the error for debugging purposes
@@ -68,7 +103,7 @@ class MealService
             return [
                 'status' => 200,
                 'message' => __('meal.meal_update_successful'),
-                'data'=> $meal,
+                'data' => $meal,
             ];
         } catch (\Exception $e) {
             // Log the error for debugging purposes

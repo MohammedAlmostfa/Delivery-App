@@ -20,7 +20,7 @@ class Rating extends Model
         'rate',          // Numeric rating score (e.g., 1-5 stars)
         'review',        // Text review given by the user
         'user_id',       // ID of the user who submitted the rating
-        'restaraunt_id', // ID of the restaurant being rated
+        'restaurant_id', // ID of the restaurant being rated
     ];
 
     /**
