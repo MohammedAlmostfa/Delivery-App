@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Image;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use CodingPartners\TranslaGenius\Traits\Translatable;
 
 /**
@@ -27,7 +29,10 @@ class Restaurant extends Model
         'restaurantType_id', // ID referencing the restaurant type
         'user_id',           // ID referencing the user who owns the restaurant
     ];
-
+    public function image(): MorphOne
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
     /**
      * Get the type of restaurant.
      *

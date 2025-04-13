@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Image;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Meal extends Model
 {
@@ -18,7 +20,10 @@ class Meal extends Model
         'availability_status',
         'time_of_prepare',
     ];
-
+    public function image(): MorphOne
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
     /**
      * Status mapping for human-readable conversion.
      */
