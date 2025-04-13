@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Meal;
 use App\Models\Restaurant;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class MealService
 {
@@ -20,7 +22,7 @@ class MealService
                     },
                     'meals.mealType' => function ($query) {
                         $query->select('id', 'mealTypeName', 'mealTypeType');
-                    },
+                    },"meals.image"
                 ])
                 ->paginate(10);
 
@@ -33,7 +35,7 @@ class MealService
 
             Log::error("Error retrieving meals: " . $e->getMessage());
 
-            // إرجاع استجابة الخطأ
+
             return [
                 'status' => 500,
                 'message' => __('general.general_error'),
@@ -60,6 +62,18 @@ class MealService
                 'restaurant_id' => $data['restaurant_id'],
                 'time_of_prepare' => $data['time_of_prepare'],
             ]);
+            if (isset($data['image'])) {
+                $image = $data['image'];
+                $imageName = Str::random(32) . '.' . $image->getClientOriginalExtension();
+                $path = $image->storeAs('private_users/images', $imageName, 'public');
+                $imageData = [
+                    'mime_type' => $image->getClientMimeType(),
+                    'image_path' => Storage::url($path),
+                    'image_name' => $imageName,
+                ];
+
+                $meal->image()->create($imageData);
+            }
 
             // Success response
             return [
@@ -98,6 +112,26 @@ class MealService
                 'availability_status' => $data['availability_status'] ?? $meal->availability_status,
                 'time_of_prepare' => $data['time_of_prepare'] ?? $meal->time_of_prepare,
             ]);
+            // Check if there's an image and update it
+            if (isset($data['image'])) {
+                // Delete the old image if it exists
+                if ($meal->image) {
+                    $meal->image()->delete();  // Correct method name here
+                }
+
+                // Upload the new image
+                $image = $data['image'];
+                $imageName = Str::random(32) . '.' . $image->getClientOriginalExtension();
+                $path = $image->storeAs('private_users/images', $imageName, 'public');
+                $imageData = [
+                    'mime_type' => $image->getClientMimeType(),
+                    'image_path' => Storage::url($path),
+                    'image_name' => $imageName,
+                ];
+
+                // Create a new image record
+                $meal->image()->create($imageData);
+            }
 
             // Success response
             return [

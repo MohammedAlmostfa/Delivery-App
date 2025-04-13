@@ -3,6 +3,8 @@
 namespace App\Http\Requests\RestaurantRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class GetNearRestaurantRequest extends FormRequest
 {
@@ -30,5 +32,21 @@ class GetNearRestaurantRequest extends FormRequest
             'mealType' => 'nullable|array|min:1',
             'mealType.*.mealType_id' => 'nullable|exists:meal_types,id',
         ];
+    }
+    /**
+     * Handle a failed validation attempt.
+     * This method is called when validation fails.
+     * Logs failed attempts and throws validation exception.
+     * @param \Illuminate\Validation\Validator $validator
+     * @return void
+     *
+     */
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new HttpResponseException(response()->json([
+            'status'  => 'error',
+            'message' => 'Validation failed.',
+            'errors'  => $validator->errors(),
+        ], 422));
     }
 }

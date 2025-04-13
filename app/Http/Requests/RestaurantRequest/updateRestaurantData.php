@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\RestaurantRequest;
 
+use App\Rules\CheckImage;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -31,8 +32,8 @@ class updateRestaurantData extends FormRequest
             'phoneNumber1' => 'nullable|string|max:15|unique:contact_infs,phoneNumber1',
             'phoneNumber2' => 'nullable|string|max:15|unique:contact_infs,phoneNumber2',
             'email' => 'nullable|email|max:255|unique:contact_infs,email',
+            'image' => ['nullable', 'image', new CheckImage]
         ];
-
     }
     /**
      * Handle a failed validation attempt.

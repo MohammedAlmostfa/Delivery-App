@@ -38,8 +38,8 @@ class MealController extends Controller
         $result = $this->mealservice->getMeal($restaurant);
         // Return success or error based on the service response
         return $result['status'] === 200
-               ? self::paginated($result['data'], MealResource::class, $result['message'], $result['status'])
-               : self::error(null, $result['message'], $result['status']);
+                 ? self::success($result['data'] ?? null, $result['message'], $result['status'])
+                 : self::error(null, $result['message'], $result['status']);
     }
     /**
      * Store a new meal in the database.

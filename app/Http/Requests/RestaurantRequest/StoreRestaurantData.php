@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests\RestaurantRequest;
 
+use App\Rules\CheckImage;
+use Illuminate\Foundation\Http\FormRequest;
+
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
-
-use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRestaurantData extends FormRequest
 {
@@ -29,10 +30,13 @@ class StoreRestaurantData extends FormRequest
             'latitude' => 'required',
             'longitude' => 'required',
             "restaurantType_id"=>'required|exists:restaurant_types,id',
+            "user_id"=>'required|exists:users,id',
             'whatsappNumber' => 'required|string|max:15|unique:contact_infs,whatsappNumber',
             'phoneNumber1' => 'required|string|max:15|unique:contact_infs,phoneNumber1',
             'phoneNumber2' => 'nullable|string|max:15|unique:contact_infs,phoneNumber2|different:phoneNumber1',
             'email' => 'required|email|max:255|unique:contact_infs,email',
+            'image' => ['required','image', new CheckImage]
+
         ];
     }
     /**

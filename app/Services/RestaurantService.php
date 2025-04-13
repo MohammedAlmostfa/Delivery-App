@@ -7,6 +7,8 @@ use App\Models\Restaurant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Service class responsible for handling restaurant-related business logic.
@@ -62,7 +64,7 @@ class RestaurantService
                 ->withAvg('ratings', 'rate')
                 ->when(!empty($filteringData), function ($query) use ($filteringData) {
                     $query->filterBy($filteringData);
-                })
+                })->with("image")
                 ->paginate(10);
 
             return [
@@ -103,8 +105,22 @@ class RestaurantService
                 'latitude' => $data['latitude'],
                 'longitude' => $data['longitude'],
                 'restaurantType_id' => $data['restaurantType_id'],
-                'user_id' => Auth::user()->id, // Get the authenticated user's ID
+                'user_id' => $data['user_id'],
             ]);
+
+
+            if (isset($data['image'])) {
+                $image = $data['image'];
+                $imageName = Str::random(32) . '.' . $image->getClientOriginalExtension();
+                $path = $image->storeAs('private_users/images', $imageName, 'public');
+                $imageData = [
+                    'mime_type' => $image->getClientMimeType(),
+                    'image_path' => Storage::url($path),
+                    'image_name' => $imageName,
+                ];
+
+                $restaurant->image()->create($imageData);
+            }
 
             // Create the related ContactInf record
             $contactinf = ContactInf::create([
@@ -145,7 +161,6 @@ class RestaurantService
     public function updateRestaurant(Restaurant $restaurant, $data)
     {
         try {
-            DB::beginTransaction();
 
             // Update the restaurant record with the provided data
             $restaurant->update([
@@ -153,7 +168,7 @@ class RestaurantService
                 'latitude' => $data['latitude'] ?? $restaurant->latitude,
                 'longitude' => $data['longitude'] ?? $restaurant->longitude,
                 'restaurantType_id' => $data['restaurantType_id'] ?? $restaurant->restaurantType_id,
-                'user_id' => Auth::user()->id,
+                'user_id' => $data['user_id']?? $restaurant->user_id,
             ]);
 
             // Update the related ContactInf record
@@ -164,20 +179,47 @@ class RestaurantService
                 'email' => $data['email'] ?? $restaurant->contactInf->email,
             ]);
 
+            // Check if there's an image and update it
+            if (isset($data['image'])) {
+                // Delete the old image if it exists
+                if ($restaurant->image) {
+                    $restaurant->image()->delete();  // Correct method name here
+                }
+
+                // Upload the new image
+                $image = $data['image'];
+                $imageName = Str::random(32) . '.' . $image->getClientOriginalExtension();
+                $path = $image->storeAs('private_users/images', $imageName, 'public');
+                $imageData = [
+                    'mime_type' => $image->getClientMimeType(),
+                    'image_path' => Storage::url($path),
+                    'image_name' => $imageName,
+                ];
+
+                // Create a new image record
+                $restaurant->image()->create($imageData);
+            }
+
+
+
             return [
                 'status' => 200,
                 'message' => __('restaurant.restaurant_updated'),
                 'data' => $restaurant,
             ];
         } catch (\Exception $e) {
-            DB::rollBack();
+
 
             // Log the error for debugging
-            Log::error("Error in updating restaurant: " . $e->getMessage());
+            Log::error("Error in updating restaurant: " . $e->getMessage(), [
+                'data' => $data, // Adding the input data for debugging purposes
+                'exception' => $e,
+            ]);
+
             return [
                 'status' => 500,
                 'message' => [
-                    'errorDetails' => [__('general.general_erorr')],
+                    'errorDetails' => [__('general.general_error')],
                 ],
             ];
         }
@@ -221,7 +263,6 @@ class RestaurantService
     public function permanentDeleteRestaurant($restaurant)
     {
         try {
-
 
             $restaurant->forceDelete();
             return [

@@ -16,7 +16,6 @@ return new class extends Migration {
             $table->string('image_name');
             $table->string('mime_type');
             $table->string('image_path');
-
             $table->timestamps();
         });
     }

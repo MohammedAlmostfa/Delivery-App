@@ -3,6 +3,8 @@
 namespace App\Http\Requests\OfferRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreOfferData extends FormRequest
 {
@@ -38,5 +40,21 @@ class StoreOfferData extends FormRequest
             'from' => date('Y-m-d', strtotime($this->input('from'))),
             'to' => date('Y-m-d', strtotime($this->input('to'))),
         ]);
+    }
+    /**
+     * Handle a failed validation attempt.
+     * This method is called when validation fails.
+     * Logs failed attempts and throws validation exception.
+     * @param \Illuminate\Validation\Validator $validator
+     * @return void
+     *
+     */
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new HttpResponseException(response()->json([
+            'status'  => 'error',
+            'message' => 'Validation failed.',
+            'errors'  => $validator->errors(),
+        ], 422));
     }
 }

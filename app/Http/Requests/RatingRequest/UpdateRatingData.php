@@ -3,6 +3,8 @@
 namespace App\Http\Requests\RatingRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateRatingData extends FormRequest
 {
@@ -25,5 +27,21 @@ class UpdateRatingData extends FormRequest
             'rate' => 'nullable|integer|min:1|max:5',
             'review' => 'nullable|string|max:1000',
         ];
+    }
+    /**
+     * Handle a failed validation attempt.
+     * This method is called when validation fails.
+     * Logs failed attempts and throws validation exception.
+     * @param \Illuminate\Validation\Validator $validator
+     * @return void
+     *
+     */
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new HttpResponseException(response()->json([
+            'status'  => 'error',
+            'message' => 'Validation failed.',
+            'errors'  => $validator->errors(),
+        ], 422));
     }
 }
