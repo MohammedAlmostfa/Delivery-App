@@ -83,9 +83,9 @@ class Meal extends Model
         return $this->hasMany(Offer::class);
     }
 
-    public function order()
+    public function orders()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsToMany(Order::class, 'order_meal');
     }
 
 

@@ -8,21 +8,19 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Facades\Auth;
+
 class MealService
 {
 
     public function getMeal(Restaurant $restaurant)
     {
         try {
-
-            $meals = $restaurant
+            $meals = $restaurant->meals()
+                ->select('id', 'mealName', 'price', 'restaurant_id', 'mealType_id', 'time_of_prepare')
                 ->with([
-                    'meals' => function ($query) {
-                        $query->select('id', 'mealName', 'price', 'restaurant_id', 'mealType_id', 'time_of_prepare');
-                    },
-                    'meals.mealType' => function ($query) {
-                        $query->select('id', 'mealTypeName', 'mealTypeType');
-                    },"meals.image"
+                    'mealType:id,mealTypeName,mealTypeType',
+                    'image'
                 ])
                 ->paginate(10);
 
@@ -32,9 +30,7 @@ class MealService
                 'data' => $meals,
             ];
         } catch (\Exception $e) {
-
             Log::error("Error retrieving meals: " . $e->getMessage());
-
 
             return [
                 'status' => 500,
@@ -42,6 +38,52 @@ class MealService
             ];
         }
     }
+
+
+    public function getRandomMeal()
+    {
+        try {
+            $user = Auth::user();
+
+            // Get all meals the user ordered
+            $meals = Meal::whereHas('orders', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+->with(['restaurant' => function ($query) {
+    $query->select('id', 'restaurant_name');
+}, 'image'])
+->select('id', 'mealName', 'price', 'restaurant_id')
+->get();
+
+
+
+
+            if ($meals->isEmpty()) {
+                return [
+                    'status' => 404,
+                    'message' => __('meal.no_meals_found'),
+                ];
+            }
+
+            $randomMeal = $meals->random();
+
+            return [
+                'status' => 200,
+                'message' => __('meal.meal_retrieved_successfully'),
+                'data' => $randomMeal,
+            ];
+        } catch (\Exception $e) {
+            Log::error("Error retrieving meals: " . $e->getMessage());
+
+            return [
+                'status' => 500,
+                'message' => __('general.general_error'),
+            ];
+        }
+    }
+
+
+
 
 
     /**

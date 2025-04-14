@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\mealrequest\StoreMealData;
 use App\Http\Requests\mealrequest\UpdateMealData;
 use App\Http\Resources\MealResource;
+use App\Http\Resources\RandomMeal;
 
 class MealController extends Controller
 {
@@ -38,8 +39,16 @@ class MealController extends Controller
         $result = $this->mealservice->getMeal($restaurant);
         // Return success or error based on the service response
         return $result['status'] === 200
-                 ? self::success($result['data'] ?? null, $result['message'], $result['status'])
+                 ? self::paginated($result['data'], MealResource::class, $result['message'], $result['status'])
                  : self::error(null, $result['message'], $result['status']);
+    }
+    public function getRandoumMeal()
+    {
+        $result = $this->mealservice->getRandomMeal();
+
+        return $result['status'] === 200
+                ? self::success(new RandomMeal($result['data'])?? null, $result['message'], $result['status'])
+                : self::error(null, $result['message'], $result['status']);
     }
     /**
      * Store a new meal in the database.
