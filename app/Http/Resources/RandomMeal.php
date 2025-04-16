@@ -18,7 +18,7 @@ class RandomMeal extends JsonResource
          "id" => $this->id,
             "mealName" => $this->mealName,
             "price" => $this->price,
-
+        'average_rating' => (float) $this->restaurant_rate_avg,
             "restaurant_name" => $this->restaurant->restaurant_name ?? null,
             "Meal_name" => $this->mealType->mealTypeName ?? null,
             'image' => $this->image->image_path && $this->image->image_name && $this->image->mime_type

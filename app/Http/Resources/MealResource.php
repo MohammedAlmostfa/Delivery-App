@@ -18,6 +18,7 @@ class MealResource extends JsonResource
             "restaurant_name" => $this->restaurant->restaurant_name ?? null,
             "Meal_name" => $this->mealType->mealTypeName ?? null,
             "meal_type" => $this->mealType->mealTypeType ?? null,
+            'average_rating' => (float) $this->restaurant_rate_avg,
             'image' => $this->image->image_path && $this->image->image_name && $this->image->mime_type
                 ? "{$this->image->image_path}/{$this->image->image_name}.{$this->image->mime_type}"
                 : null,

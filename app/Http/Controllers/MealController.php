@@ -34,9 +34,9 @@ class MealController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getMeal(Restaurant $restaurant)
+    public function getMeal($id)
     {
-        $result = $this->mealservice->getMeal($restaurant);
+        $result = $this->mealservice->getMeal($id);
         // Return success or error based on the service response
         return $result['status'] === 200
                  ? self::paginated($result['data'], MealResource::class, $result['message'], $result['status'])

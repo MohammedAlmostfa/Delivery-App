@@ -73,7 +73,7 @@ Route::middleware('jwt')->group(function () {
     */
     Route::get('/meal/randoum', [MealController::class, 'getRandoumMeal']);
 
-    Route::get('/meal/restaurant/{restaurant}', [MealController::class, 'getMeal']);
+    Route::get('/meal/restaurant/{id}', [MealController::class, 'getMeal']);
     Route::apiResource("/meal", MealController::class); // Standard CRUD operations for meals
     Route::post("/meal/permanent/{id}", [MealController::class, 'permanentDelete']); // Permanently delete a meal (undo soft delete)
     Route::post("/meal/restore/{id}", [MealController::class, 'restore']); // Restore a soft-deleted meal

@@ -17,7 +17,7 @@ class OfferService
     public function getOffer($data)
     {
         try {
-            $data = request()->all(); // Get request data safely
+
 
             $user = Auth::user();
             $latitude = $data['latitude'] ?? $user->latitude;
@@ -28,12 +28,9 @@ class OfferService
             $user = Auth::user();
             $latitude = $data['latitude'] ?? $user->latitude;
             $longitude = $data['longitude'] ?? $user->longitude;
-            $radius = $data['radius'] ?? 100000; // تحويل إلى عدد صحيح
+            $radius = $data['radius'] ?? 100000;
 
-            $user = Auth::user();
-            $latitude = $data['latitude'] ?? $user->latitude;
-            $longitude = $data['longitude'] ?? $user->longitude;
-            $radius = $data['radius'] ?? 100000; // تحويل إلى عدد صحيح
+
 
             $offers = Offer::whereHas('meal.restaurant', function ($query) use ($latitude, $longitude, $radius) {
                 $query->nearby($latitude, $longitude, $radius);
