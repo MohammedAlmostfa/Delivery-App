@@ -14,7 +14,6 @@ class RestaurantSeeder extends Seeder
      */
     public function run(): void
     {
-
         $images = [
             [
                 'image_name' => 'ceb457975b293aa4bd9fd5d7a0dff8a2',
@@ -46,15 +45,15 @@ class RestaurantSeeder extends Seeder
             $user = $users->random();
             $image = $images[array_rand($images)];
 
-            $restaurant=   Restaurant::create([
-                  'restaurant_name' => $faker->company,
-                  'latitude' => $faker->latitude($user->latitude - 0.05, $user->latitude + 0.10),
-                  'longitude' => $faker->longitude($user->longitude - 0.05, $user->longitude + 0.10),
-                  'restaurantType_id' => $faker->numberBetween(1, 5),
-                  'user_id' => $user->id,
-              ]);
-            $restaurant->image()->create($image);
+            $restaurant = Restaurant::create([
+                'restaurant_name' => $faker->company,
 
+                'latitude' => $faker->latitude(34.95, 35.05),
+                'longitude' => $faker->longitude(34.95, 35.05),
+                'restaurantType_id' => $faker->numberBetween(1, 5),
+                'user_id' => $user->id,
+            ]);
+            $restaurant->image()->create($image);
         }
     }
 }

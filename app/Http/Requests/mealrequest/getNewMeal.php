@@ -26,6 +26,7 @@ class getNewMeal extends FormRequest
         return [
             'latitude' => 'nullable',
             'longitude' => 'nullable',
+                  'radius' => 'nullable|integer|min:1',
         ];
     }
     /**

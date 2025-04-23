@@ -243,9 +243,12 @@ class AuthService
  * @param User $user The user model instance whose location needs to be updated.
  * @return array Response array with a message and status code.
  */
-    public function setLocation($data, User $user)
+    public function setLocation($data)
     {
         try {
+
+            $user = Auth::user();
+
             // Update only latitude and longitude without modifying other user details
             $user->update([
                 'latitude' => $data["latitude"],  // Set the new latitude

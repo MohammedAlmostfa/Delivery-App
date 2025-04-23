@@ -92,12 +92,12 @@ class AuthController extends Controller
      * @param User $user The authenticated user instance.
      * @return \Illuminate\Http\JsonResponse
      */
-    public function setLocation(SetLocationData $request, User $user)
+    public function setLocation(SetLocationData $request)
     {
         $validationData = $request->validated();
 
         // Update user location via AuthService
-        $result = $this->authService->setLocation($validationData, $user);
+        $result = $this->authService->setLocation($validationData);
 
         return $result['status'] === 200
             ? self::success(null, $result['message'], $result['status'])

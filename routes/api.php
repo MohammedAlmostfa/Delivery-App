@@ -53,7 +53,7 @@ Route::middleware('jwt')->group(function () {
     | User Profile Routes
     | Handle user data retrieval and updates.
     */
-    Route::post('/user/setlocation/{user}', [AuthController::class, 'setLocation']); // Update user's location
+    Route::post('/user/setlocation', [AuthController::class, 'setLocation']); // Update user's location
     Route::get('/user', [AuthController::class, 'getUser']); // Fetch authenticated user details
     Route::put('/user', [AuthController::class, 'updateUser']); // Update user profile data
     Route::post('/logout', [AuthController::class, 'logout']); // Logout user and invalidate JWT token
