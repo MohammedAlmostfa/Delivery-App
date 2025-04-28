@@ -60,7 +60,11 @@ class Restaurant extends Model
      */
     public function meals()
     {
-        return $this->hasMany(Meal::class); // A restaurant can have multiple meals.
+        return $this->hasMany(Meal::class);
+    }
+    public function mealTypes()
+    {
+        return $this->belongsToMany(MealType::class, 'restaurant_mealtype');
     }
 
 

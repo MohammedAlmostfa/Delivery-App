@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\MealType;
 use App\Models\Restaurant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -47,13 +48,17 @@ class RestaurantSeeder extends Seeder
 
             $restaurant = Restaurant::create([
                 'restaurant_name' => $faker->company,
-
                 'latitude' => $faker->latitude(34.95, 35.05),
                 'longitude' => $faker->longitude(34.95, 35.05),
                 'restaurantType_id' => $faker->numberBetween(1, 5),
                 'user_id' => $user->id,
             ]);
             $restaurant->image()->create($image);
+            $mealsTypes = MealType::all();
+            foreach ($mealsTypes as $mealType) {
+                $restaurant->mealTypes()->attach($mealType->id);
+
+            }
         }
     }
 }

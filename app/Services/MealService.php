@@ -17,21 +17,25 @@ class MealService
      * @param Restaurant $restaurant The restaurant from which meals are fetched.
      * @return array The response containing the status, message, and paginated meals.
      */
-    public function getMeal($id)
+    public function getMeal($id, $mealType)
     {
         try {
 
             $restaurant = Restaurant::withAvg('ratings', 'rate')->findOrFail($id);
 
+
             $meals = $restaurant->meals()
+                ->where('mealType_id', $mealType)
                 ->select('id', 'mealName', 'price', 'restaurant_id', 'mealType_id', 'time_of_prepare')
                 ->with([
                     'mealType:id,mealTypeName,mealTypeType',
                     'image'
                 ])
                 ->paginate(10);
+
+
             $meals->each(function ($meal) use ($restaurant) {
-                $meal->restaurant_rate_avg = $restaurant->ratings_avg_rate;
+                $meal->restaurant_rate_avg = $restaurant->ratings_avg_rate ?? 0;
             });
 
             return [
@@ -40,7 +44,11 @@ class MealService
                 'data' => $meals,
             ];
         } catch (\Exception $e) {
-            Log::error("Error retrieving meals: " . $e->getMessage());
+            // سجل الخطأ مع التفاصيل
+            Log::error("Error retrieving meals: " . $e->getMessage(), [
+                'restaurant_id' => $id,
+                'mealType_id' => $mealType,
+            ]);
 
             return [
                 'status' => 500,
@@ -48,7 +56,6 @@ class MealService
             ];
         }
     }
-
 
     /**
      * Get a random meal from the meals ordered by the authenticated user.

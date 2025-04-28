@@ -3,63 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Models\MealType;
+use App\Models\Restaurant;
 use Illuminate\Http\Request;
+use App\Services\MealTypeService;
+use App\Http\Resources\GroupedMealTypesResource;
 
 class MealTypeController extends Controller
 {
+    protected $mealTypeService;
+
     /**
-     * Display a listing of the resource.
+     * Inject MealTypeService dependency.
+     *
+     * @param MealTypeService $mealTypeService
      */
-    public function index()
+    public function __construct(MealTypeService $mealTypeService)
     {
-        //
+        $this->mealTypeService = $mealTypeService;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the meal types for a restaurant.
      */
-    public function create()
+    public function index(Restaurant $restaurant)
     {
-        //
+        $result = $this->mealTypeService->getMealType($restaurant);
+
+        return $result['status'] === 200
+            ? self::success(new GroupedMealTypesResource($result['data'], ), $result['message'], $result['status'])
+            : self::error(null, $result['message'], $result['status']);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(MealType $mealType)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(MealType $mealType)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, MealType $mealType)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(MealType $mealType)
-    {
-        //
-    }
 }

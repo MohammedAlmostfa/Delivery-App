@@ -27,6 +27,10 @@ class MealType extends Model
     {
         return $this->hasMany(Meal::class);
     }
+    public function restaurants()
+    {
+        return $this->belongsToMany(Restaurant::class, 'restaurant_mealtype');
+    }
 
     /**
      * Mapping of meal type statuses from numeric to human-readable text.

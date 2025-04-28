@@ -10,6 +10,7 @@ use App\Http\Requests\mealrequest\StoreMealData;
 use App\Http\Requests\mealrequest\UpdateMealData;
 use App\Http\Resources\MealResource;
 use App\Http\Resources\RandomMeal;
+use App\Models\MealType;
 
 class MealController extends Controller
 {
@@ -34,21 +35,22 @@ class MealController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getMeal($id)
+    public function getMeal($restaurant, MealType $mealType)
     {
-        $result = $this->mealservice->getMeal($id);
+        $result = $this->mealservice->getMeal($restaurant, $mealType);
         // Return success or error based on the service response
         return $result['status'] === 200
-                 ? self::paginated($result['data'], MealResource::class, $result['message'], $result['status'])
-                 : self::error(null, $result['message'], $result['status']);
+          ? self::success($result['data'] ?? null, $result['message'], $result['status'])
+          : self::error(null, $result['message'], $result['status']);
     }
+
     public function getRandoumMeal()
     {
         $result = $this->mealservice->getRandomMeal();
 
         return $result['status'] === 200
-                ? self::success(new RandomMeal($result['data'])?? null, $result['message'], $result['status'])
-                : self::error(null, $result['message'], $result['status']);
+            ? self::success(new RandomMeal($result['data']) ?? null, $result['message'], $result['status'])
+            : self::error(null, $result['message'], $result['status']);
     }
     /**
      * Store a new meal in the database.
@@ -67,8 +69,8 @@ class MealController extends Controller
 
         // Return success or error based on the service response
         return $result['status'] === 200
-               ? self::success($result['data'] ?? null, $result['message'], $result['status'])
-               : self::error(null, $result['message'], $result['status']);
+            ? self::success($result['data'] ?? null, $result['message'], $result['status'])
+            : self::error(null, $result['message'], $result['status']);
     }
 
     /**
@@ -103,8 +105,8 @@ class MealController extends Controller
 
         // Return success or error based on the service response
         return $result['status'] === 200
-               ? self::success($result['data'] ?? null, $result['message'], $result['status'])
-               : self::error(null, $result['message'], $result['status']);
+            ? self::success($result['data'] ?? null, $result['message'], $result['status'])
+            : self::error(null, $result['message'], $result['status']);
     }
 
     /**
@@ -123,8 +125,8 @@ class MealController extends Controller
 
         // Return success or error based on the service response
         return $result['status'] === 200
-               ? self::success(null, $result['message'], $result['status'])
-               : self::error(null, $result['message'], $result['status']);
+            ? self::success(null, $result['message'], $result['status'])
+            : self::error(null, $result['message'], $result['status']);
     }
 
     /**
@@ -145,8 +147,8 @@ class MealController extends Controller
 
         // Return success or error based on the service response
         return $result['status'] === 200
-               ? self::success(null, $result['message'], $result['status'])
-               : self::error(null, $result['message'], $result['status']);
+            ? self::success(null, $result['message'], $result['status'])
+            : self::error(null, $result['message'], $result['status']);
     }
 
     /**
@@ -167,7 +169,7 @@ class MealController extends Controller
 
         // Return success or error based on the service response
         return $result['status'] === 200
-               ? self::success(null, $result['message'], $result['status'])
-               : self::error(null, $result['message'], $result['status']);
+            ? self::success(null, $result['message'], $result['status'])
+            : self::error(null, $result['message'], $result['status']);
     }
 }

@@ -8,7 +8,9 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
+use App\Http\Controllers\MealTypeController;
 use App\Http\Controllers\RatingController;
+use App\Models\MealType;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,10 +75,11 @@ Route::middleware('jwt')->group(function () {
     */
     Route::get('/meal/randoum', [MealController::class, 'getRandoumMeal']);
 
-    Route::get('/meal/restaurant/{id}', [MealController::class, 'getMeal']);
+    Route::get('/meal/restaurant/{restaurant}/mealType/{mealType}', [MealController::class, 'getMeal']);
     Route::apiResource("/meal", MealController::class); // Standard CRUD operations for meals
     Route::post("/meal/permanent/{id}", [MealController::class, 'permanentDelete']); // Permanently delete a meal (undo soft delete)
     Route::post("/meal/restore/{id}", [MealController::class, 'restore']); // Restore a soft-deleted meal
+    Route::get('/mealtype/resataurant/{restaurant}', [MealTypeController::class, 'index']);
 
     /*
     | Offer Routes
