@@ -22,8 +22,6 @@ class MealService
         try {
 
             $restaurant = Restaurant::withAvg('ratings', 'rate')->findOrFail($id);
-
-
             $meals = $restaurant->meals()
                 ->where('mealType_id', $mealType)
                 ->select('id', 'mealName', 'price', 'restaurant_id', 'mealType_id', 'time_of_prepare')
@@ -32,7 +30,6 @@ class MealService
                     'image'
                 ])
                 ->paginate(10);
-
 
             $meals->each(function ($meal) use ($restaurant) {
                 $meal->restaurant_rate_avg = $restaurant->ratings_avg_rate ?? 0;
